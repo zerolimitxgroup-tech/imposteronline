@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0053)file:///C:/Users/User/Downloads/imposter-local_1.html -->
+<!-- saved from url=(0053)file:///C:/Users/User/Downloads/imposter-local_2.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -232,7 +232,7 @@ function startGame(){if(G.p.length<3||!G.cat)return;const ws=C[G.cat].words;G.wo
   G.order=[...Array(G.p.length).keys()].sort(()=>Math.random()-.5);
   G.revI=0;showPass(G.order[0],'reveal')}
 
-function showPass(i,mode){const o=document.getElementById('passOv');document.getElementById('passText').textContent='Pass to '+G.p[i];document.getElementById('passSub').textContent=mode==='reveal'?'Make sure nobody else is looking!':'Time to vote!';document.getElementById('passBtn').onclick=()=>{o.classList.remove('active');if(mode==='reveal')showReveal(i);else showVoteFor()};o.classList.add('active');if(mode==='reveal')G.revI=i}
+function showPass(i,mode){const o=document.getElementById('passOv');document.getElementById('passText').textContent='Pass to '+G.p[i];document.getElementById('passSub').textContent=mode==='reveal'?'Make sure nobody else is looking!':'Time to vote!';document.getElementById('passBtn').onclick=()=>{o.classList.remove('active');if(mode==='reveal')showReveal(i);else showVoteFor()};o.classList.add('active')}
 
 function showReveal(i){goTo('screenReveal');document.getElementById('revName').textContent=G.p[i];const isI=G.impIdx.includes(i);document.getElementById('revBack').className='reveal-back '+(isI?'is-imposter':'is-safe');const rl=document.getElementById('revRole');rl.className='reveal-role '+(isI?'imposter':'safe');rl.textContent=isI?'☠ IMPOSTER':'✓ CREW';const wd=document.getElementById('revWord');wd.textContent=isI?'IMPOSTER':G.word;wd.style.color=isI?'var(--accent)':'var(--safe)';const hb=document.getElementById('revHintBox');if(isI){hb.classList.remove('hidden');document.getElementById('revHintWord').textContent=G.hint}else hb.classList.add('hidden');document.getElementById('revHint').textContent=isI?'Use this hint to blend in!':'Remember your word!';G.flip=false;document.getElementById('revCard').classList.remove('flipped');document.getElementById('revNext').style.display='none'}
 function flipCard(){if(G.flip)return;G.flip=true;document.getElementById('revCard').classList.add('flipped');setTimeout(()=>{document.getElementById('revNext').style.display='block'},600)}
