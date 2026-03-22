@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<!-- saved from url=(0052)file:///C:/Users/User/Downloads/imposter-game_7.html -->
+<!-- saved from url=(0052)file:///C:/Users/User/Downloads/imposter-game_8.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>IMPOSTER — The Party Game</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=&#39;http://www.w3.org/2000/svg&#39; viewBox=&#39;0 0 100 100&#39;%3E%3Ccircle cx=&#39;50&#39; cy=&#39;48&#39; r=&#39;36&#39; fill=&#39;%230a0a0f&#39;/%3E%3Ccircle cx=&#39;50&#39; cy=&#39;48&#39; r=&#39;34&#39; fill=&#39;%231c1c28&#39; stroke=&#39;%23ff3a5c&#39; stroke-width=&#39;3&#39;/%3E%3Ccircle cx=&#39;38&#39; cy=&#39;44&#39; r=&#39;9&#39; fill=&#39;%23ff3a5c&#39;/%3E%3Ccircle cx=&#39;62&#39; cy=&#39;44&#39; r=&#39;9&#39; fill=&#39;%23ff3a5c&#39;/%3E%3Crect x=&#39;44&#39; y=&#39;58&#39; width=&#39;5&#39; height=&#39;10&#39; rx=&#39;2.5&#39; fill=&#39;%23ff3a5c&#39; opacity=&#39;.6&#39;/%3E%3Crect x=&#39;52&#39; y=&#39;58&#39; width=&#39;5&#39; height=&#39;10&#39; rx=&#39;2.5&#39; fill=&#39;%23ff3a5c&#39; opacity=&#39;.6&#39;/%3E%3C/svg%3E">
+<script src="./index_files/firebase-app-compat.js.download"></script>
+<script src="./index_files/firebase-database-compat.js.download"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap');
 
@@ -497,18 +499,92 @@ function localPlayAgain(){localStartGame()}
 let O={roomCode:null,myName:null,isHost:false,pollId:null,cat:null,imposters:1,rounds:3,flipped:false,voteSel:null,voted:false,lastPhase:null,readySent:false,resultsShown:false,lastRound:0,lastClueCount:0,submittedClue:false};
 const POLL_MS=1200;
 
-async function sGet(k,sh){try{const r=await window.storage.get(k,sh);return r?JSON.parse(r.value):null}catch(e){return null}}
-async function sSet(k,v,sh){try{await window.storage.set(k,JSON.stringify(v),sh);return true}catch(e){return false}}
-async function sDel(k,sh){try{await window.storage.delete(k,sh)}catch(e){}}
+// ── FIREBASE CONFIG ──
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDUW7s0nVpnuvvadOxl1ZAHfKDtLeWz-Gw",
+  authDomain: "imposter-game-b6fa1.firebaseapp.com",
+  projectId: "imposter-game-b6fa1",
+  storageBucket: "imposter-game-b6fa1.firebasestorage.app",
+  messagingSenderId: "217306275936",
+  appId: "1:217306275936:web:589d2b90ff21cd4444e305",
+  measurementId: "G-GM4G2B97FE"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+let db = null;
+let roomRef = null;
+let roomListener = null;
+
+function initFirebase() {
+  if (db) return;
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+  } catch(e) {
+    if (e.code !== 'app/duplicate-app') console.error(e);
+    db = firebase.database();
+  }
+}
+
+async function sGet(k) {
+  initFirebase();
+  try {
+    const snap = await db.ref('rooms/' + k).once('value');
+    return snap.val();
+  } catch(e) { console.error('sGet error:', e); return null; }
+}
+
+async function sSet(k, v) {
+  initFirebase();
+  try {
+    await db.ref('rooms/' + k).set(v);
+    return true;
+  } catch(e) { console.error('sSet error:', e); return false; }
+}
+
+async function sDel(k) {
+  initFirebase();
+  try { await db.ref('rooms/' + k).remove(); } catch(e) {}
+}
+
+// Real-time listener — replaces polling for much faster sync
+function startListening(code, callback) {
+  stopListening();
+  initFirebase();
+  roomRef = db.ref('rooms/' + code);
+  roomListener = roomRef.on('value', (snap) => {
+    const room = snap.val();
+    if (room) callback(room);
+    else { showToast('Room closed'); stopListening(); onlineGlow(false); goTo('screenHome'); }
+  }, (err) => { console.error('Listener error:', err); });
+}
+
+function stopListening() {
+  if (roomRef && roomListener) { roomRef.off('value', roomListener); }
+  roomRef = null; roomListener = null;
+  // Also stop legacy polling if active
+  if (O.pollId) { clearInterval(O.pollId); O.pollId = null; }
+}
+
 function onlineGlow(on){document.getElementById('bgGlow').classList.toggle('online-mode',on)}
 
 async function onlineCreateRoom(){const name=document.getElementById('onlineName').value.trim();if(!name){showToast('Enter your name');return}O.myName=name;O.isHost=true;O.cat=null;O.imposters=1;O.rounds=3;O.roomCode=genCode();
   const room={code:O.roomCode,host:name,players:[name],scores:{[name]:0},phase:'lobby',cat:null,imposters:1,rounds:3,word:null,hintWord:null,imposterIndices:[],assignments:{},ready:{},votes:{},clues:[],clueTurnIdx:0,clueRound:1,round:1,scored:false};
-  if(!await sSet('room:'+O.roomCode,room,true)){showToast('Failed');return}onlineGlow(true);onlineOpenLobby()}
+  if(!await sSet(O.roomCode,room)){showToast('Failed');return}onlineGlow(true);onlineOpenLobby()}
 
 async function onlineJoinRoom(){const name=document.getElementById('onlineName').value.trim(),code=document.getElementById('onlineRoomCode').value.trim().toUpperCase();if(!name){showToast('Enter your name');return}if(code.length!==4){showToast('Enter 4-letter code');return}O.myName=name;O.roomCode=code;O.isHost=false;
-  const room=await sGet('room:'+code,true);if(!room){showToast('Room not found');return}if(room.phase!=='lobby'){showToast('Game in progress');return}if(room.players.includes(name)){showToast('Name taken');return}if(room.players.length>=20){showToast('Room full');return}
-  room.players.push(name);if(!room.scores[name])room.scores[name]=0;await sSet('room:'+code,room,true);onlineGlow(true);onlineOpenLobby()}
+  const room=await sGet(code);if(!room){showToast('Room not found');return}if(room.phase!=='lobby'){showToast('Game in progress');return}if(room.players.includes(name)){showToast('Name taken');return}if(room.players.length>=20){showToast('Room full');return}
+  room.players.push(name);if(!room.scores[name])room.scores[name]=0;await sSet(code,room);onlineGlow(true);onlineOpenLobby()}
 
 function onlineOpenLobby(){document.getElementById('lobbyCodeText').textContent=O.roomCode;O.lastPhase=null;O.lastRound=0;goTo('screenOnlineLobby');startPolling()}
 function onlineCheckReady(){document.getElementById('onlineStartBtn').disabled=!O.cat}
@@ -517,41 +593,44 @@ function onlineChangeRounds(d){O.rounds=Math.max(1,Math.min(10,O.rounds+d));docu
 function onlineSelectCat(k){O.cat=k;renderCatGrid('lobbyCatGrid',O.cat,onlineSelectCat);onlineCheckReady()}
 function copyRoomCode(){if(navigator.clipboard)navigator.clipboard.writeText(O.roomCode).then(()=>showToast('Copied!')).catch(()=>{});else showToast(O.roomCode)}
 
-async function onlineStartGame(){if(!O.cat||!O.isHost)return;const room=await sGet('room:'+O.roomCode,true);if(!room||room.players.length<3){showToast('Need 3+ players');return}
+async function onlineStartGame(){if(!O.cat||!O.isHost)return;const room=await sGet(O.roomCode);if(!room||room.players.length<3){showToast('Need 3+ players');return}
   const ws=CATEGORIES[O.cat].words;room.word=ws[Math.floor(Math.random()*ws.length)];room.hintWord=getHintWord(O.cat,room.word);
   room.cat=O.cat;room.imposters=O.imposters;room.rounds=O.rounds;
   const sh=[...Array(room.players.length).keys()].sort(()=>Math.random()-.5);const n=Math.min(O.imposters,Math.floor(room.players.length/2)-1)||1;room.imposterIndices=sh.slice(0,n);
   room.assignments={};room.ready={};room.votes={};room.clues=[];room.clueTurnIdx=0;room.clueRound=1;room.scored=false;
   room.players.forEach((p,i)=>{room.assignments[p]=room.imposterIndices.includes(i)?{role:'imposter',word:'IMPOSTER',hint:room.hintWord}:{role:'crew',word:room.word,hint:null}});
-  room.phase='reveal';await sSet('room:'+O.roomCode,room,true)}
+  room.phase='reveal';await sSet(O.roomCode,room)}
 
 function onlineFlipCard(){if(O.flipped)return;O.flipped=true;document.getElementById('onlineRevealCard').classList.add('flipped');setTimeout(()=>{document.getElementById('onlineRevealReady').style.display='block'},600)}
 
 async function onlineMarkReady(){if(O.readySent)return;O.readySent=true;document.getElementById('onlineRevealReady').style.display='none';document.getElementById('onlineRevealWaiting').style.display='block';
-  const room=await sGet('room:'+O.roomCode,true);if(!room)return;room.ready[O.myName]=true;
+  const room=await sGet(O.roomCode);if(!room)return;room.ready[O.myName]=true;
   if(O.isHost&&Object.keys(room.ready).length>=room.players.length)room.phase='clues';
-  await sSet('room:'+O.roomCode,room,true)}
+  await sSet(O.roomCode,room)}
 
 async function onlineSubmitClue(){const inp=document.getElementById('onlineClueInput'),word=inp.value.trim();if(!word)return;inp.value='';
-  const room=await sGet('room:'+O.roomCode,true);if(!room||room.players[room.clueTurnIdx]!==O.myName)return;
+  const room=await sGet(O.roomCode);if(!room||room.players[room.clueTurnIdx]!==O.myName)return;
   room.clues.push({player:O.myName,word:word,round:room.clueRound});room.clueTurnIdx++;
   if(room.clueTurnIdx>=room.players.length){room.clueTurnIdx=0;room.clueRound++;if(room.clueRound>room.rounds){room.phase='vote';room.votes={}}}
-  O.submittedClue=true;await sSet('room:'+O.roomCode,room,true)}
+  O.submittedClue=true;await sSet(O.roomCode,room)}
 
 async function onlineCastVote(){if(O.voteSel===null||O.voted)return;O.voted=true;document.getElementById('onlineVoteCastBtn').disabled=true;document.getElementById('onlineVoteWaiting').style.display='block';document.querySelectorAll('#onlineVoteOptions .vote-card').forEach(c=>c.classList.add('disabled'));
-  const room=await sGet('room:'+O.roomCode,true);if(!room)return;room.votes[O.myName]=O.voteSel;
+  const room=await sGet(O.roomCode);if(!room)return;room.votes[O.myName]=O.voteSel;
   if(Object.keys(room.votes).length>=room.players.length)room.phase='results';
-  await sSet('room:'+O.roomCode,room,true)}
+  await sSet(O.roomCode,room)}
 
-async function onlinePlayAgain(){const room=await sGet('room:'+O.roomCode,true);if(!room||!O.isHost)return;room.phase='lobby';room.word=null;room.hintWord=null;room.assignments={};room.ready={};room.votes={};room.clues=[];room.imposterIndices=[];room.scored=false;room.clueTurnIdx=0;room.clueRound=1;room.round=(room.round||1)+1;await sSet('room:'+O.roomCode,room,true)}
+async function onlinePlayAgain(){const room=await sGet(O.roomCode);if(!room||!O.isHost)return;room.phase='lobby';room.word=null;room.hintWord=null;room.assignments={};room.ready={};room.votes={};room.clues=[];room.imposterIndices=[];room.scored=false;room.clueTurnIdx=0;room.clueRound=1;room.round=(room.round||1)+1;await sSet(O.roomCode,room)}
 
-async function onlineLeaveRoom(){stopPolling();if(O.roomCode){const room=await sGet('room:'+O.roomCode,true);if(room){room.players=room.players.filter(p=>p!==O.myName);if(room.players.length===0)await sDel('room:'+O.roomCode,true);else{if(room.host===O.myName)room.host=room.players[0];await sSet('room:'+O.roomCode,room,true)}}}O.roomCode=null;onlineGlow(false);goTo('screenHome')}
+async function onlineLeaveRoom(){stopListening();if(O.roomCode){const room=await sGet(O.roomCode);if(room){room.players=room.players.filter(p=>p!==O.myName);if(room.players.length===0)await sDel(O.roomCode);else{if(room.host===O.myName)room.host=room.players[0];await sSet(O.roomCode,room)}}}O.roomCode=null;onlineGlow(false);goTo('screenHome')}
 
-function startPolling(){stopPolling();pollRoom();O.pollId=setInterval(pollRoom,POLL_MS)}
-function stopPolling(){if(O.pollId){clearInterval(O.pollId);O.pollId=null}}
+function startPolling(){
+  // Use Firebase real-time listener instead of polling
+  if(!O.roomCode) return;
+  startListening(O.roomCode, (room) => { handleRoomUpdate(room); });
+}
+function stopPolling(){ stopListening(); }
 
-async function pollRoom(){if(!O.roomCode)return;const room=await sGet('room:'+O.roomCode,true);
-  if(!room){showToast('Room closed');stopPolling();onlineGlow(false);goTo('screenHome');return}
+function handleRoomUpdate(room){if(!O.roomCode)return;
   O.isHost=room.host===O.myName;
   if(room.round!==O.lastRound){O.lastPhase=null;O.flipped=false;O.voteSel=null;O.voted=false;O.readySent=false;O.resultsShown=false;O.lastClueCount=0;O.submittedClue=false;O.lastRound=room.round}
   if(room.phase==='lobby')pollLobby(room);
@@ -598,7 +677,7 @@ function pollResults(room){if(!O.resultsShown){O.resultsShown=true;goTo('screenO
   const tally={};room.players.forEach(p=>tally[p]=0);for(const v of Object.values(room.votes||{}))tally[v]=(tally[v]||0)+1;
   let maxV=0,vo=[];for(const[n,c]of Object.entries(tally)){if(c>maxV){maxV=c;vo=[n]}else if(c===maxV&&c>0)vo.push(n)}
   const impN=(room.imposterIndices||[]).map(i=>room.players[i]),caught=vo.filter(n=>impN.includes(n)),cw=caught.length>0;
-  if(O.isHost&&!room.scored){(async()=>{const rm=await sGet('room:'+O.roomCode,true);if(!rm||rm.scored)return;if(cw)rm.players.forEach((p,i)=>{if(!rm.imposterIndices.includes(i))rm.scores[p]=(rm.scores[p]||0)+10});else rm.imposterIndices.forEach(i=>{rm.scores[rm.players[i]]=(rm.scores[rm.players[i]]||0)+15});rm.scored=true;await sSet('room:'+O.roomCode,rm,true)})()}
+  if(O.isHost&&!room.scored){(async()=>{const rm=await sGet(O.roomCode);if(!rm||rm.scored)return;if(cw)rm.players.forEach((p,i)=>{if(!rm.imposterIndices.includes(i))rm.scores[p]=(rm.scores[p]||0)+10});else rm.imposterIndices.forEach(i=>{rm.scores[rm.players[i]]=(rm.scores[rm.players[i]]||0)+15});rm.scored=true;await sSet(O.roomCode,rm)})()}
   document.getElementById('onlineResultsContent').innerHTML=buildResultsHTML(cw,impN,room.word,room.hintWord,tally,maxV,room.players,room.scores,room.clues);
   document.getElementById('onlineResultsHostBtns').classList.toggle('hidden',!O.isHost);document.getElementById('onlineResultsGuestBtns').classList.toggle('hidden',O.isHost)}}
 
