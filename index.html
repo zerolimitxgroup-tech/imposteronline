@@ -1,126 +1,56 @@
 <!DOCTYPE html>
-<!-- saved from url=(0052)file:///C:/Users/User/Downloads/imposter-game_9.html -->
+<!-- saved from url=(0053)file:///C:/Users/User/Downloads/imposter-local_1.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>IMPOSTER — The Party Game</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=&#39;http://www.w3.org/2000/svg&#39; viewBox=&#39;0 0 100 100&#39;%3E%3Ccircle cx=&#39;50&#39; cy=&#39;48&#39; r=&#39;36&#39; fill=&#39;%230a0a0f&#39;/%3E%3Ccircle cx=&#39;50&#39; cy=&#39;48&#39; r=&#39;34&#39; fill=&#39;%231c1c28&#39; stroke=&#39;%23ff3a5c&#39; stroke-width=&#39;3&#39;/%3E%3Ccircle cx=&#39;38&#39; cy=&#39;44&#39; r=&#39;9&#39; fill=&#39;%23ff3a5c&#39;/%3E%3Ccircle cx=&#39;62&#39; cy=&#39;44&#39; r=&#39;9&#39; fill=&#39;%23ff3a5c&#39;/%3E%3Crect x=&#39;44&#39; y=&#39;58&#39; width=&#39;5&#39; height=&#39;10&#39; rx=&#39;2.5&#39; fill=&#39;%23ff3a5c&#39; opacity=&#39;.6&#39;/%3E%3Crect x=&#39;52&#39; y=&#39;58&#39; width=&#39;5&#39; height=&#39;10&#39; rx=&#39;2.5&#39; fill=&#39;%23ff3a5c&#39; opacity=&#39;.6&#39;/%3E%3C/svg%3E">
-<script src="./index_files/firebase-app-compat.js.download"></script>
-<script src="./index_files/firebase-database-compat.js.download"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap');
-
-  :root {
-    --bg: #0a0a0f;
-    --surface: #13131a;
-    --surface2: #1c1c28;
-    --surface3: #22222f;
-    --border: #2a2a3a;
-    --text: #e8e6f0;
-    --text-dim: #8a879a;
-    --accent: #ff3a5c;
-    --accent-glow: rgba(255,58,92,0.3);
-    --accent-soft: rgba(255,58,92,0.08);
-    --safe: #00e676;
-    --safe-glow: rgba(0,230,118,0.25);
-    --warn: #ffc107;
-    --warn-soft: rgba(255,193,7,0.08);
-    --online: #448aff;
-    --online-glow: rgba(68,138,255,0.3);
-    --online-soft: rgba(68,138,255,0.08);
-    --radius: 16px;
-    --radius-sm: 10px;
-  }
-
+  :root{--bg:#0a0a0f;--surface:#13131a;--surface2:#1c1c28;--border:#2a2a3a;--text:#e8e6f0;--text-dim:#8a879a;--accent:#ff3a5c;--accent-glow:rgba(255,58,92,0.3);--accent-soft:rgba(255,58,92,0.08);--safe:#00e676;--safe-glow:rgba(0,230,118,0.25);--warn:#ffc107;--radius:16px;--radius-sm:10px}
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-tap-highlight-color:transparent}
   body{min-height:100dvh;display:flex;flex-direction:column}
-
   .bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,58,92,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,58,92,0.03) 1px,transparent 1px);background-size:60px 60px}
-  .bg-glow{position:fixed;top:-30%;left:50%;transform:translateX(-50%);width:800px;height:800px;border-radius:50%;z-index:0;pointer-events:none;background:radial-gradient(circle,rgba(255,58,92,0.06) 0%,transparent 70%);transition:background .5s}
-  .bg-glow.online-mode{background:radial-gradient(circle,rgba(68,138,255,0.06) 0%,transparent 70%)}
-
+  .bg-glow{position:fixed;top:-30%;left:50%;transform:translateX(-50%);width:800px;height:800px;border-radius:50%;z-index:0;pointer-events:none;background:radial-gradient(circle,rgba(255,58,92,0.06) 0%,transparent 70%)}
   .screen{display:none;flex-direction:column;align-items:center;width:100%;max-width:520px;margin:0 auto;padding:24px 20px 40px;position:relative;z-index:1;flex:1}
   .screen.active{display:flex;animation:fadeUp .35s ease}
-
   @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
   @keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
   @keyframes glowPulse{0%,100%{box-shadow:0 0 8px var(--accent-glow)}50%{box-shadow:0 0 20px var(--accent-glow),0 0 40px rgba(255,58,92,0.1)}}
-
   .logo{font-family:'Dela Gothic One',cursive;font-size:clamp(2.2rem,7vw,3.4rem);letter-spacing:-1px;text-align:center;margin:32px 0 6px;background:linear-gradient(135deg,#ff3a5c 0%,#ff6b81 50%,#ff3a5c 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 30px rgba(255,58,92,0.3));user-select:none}
   .logo-sm{font-size:1.5rem;margin:0 0 4px}
-  .logo-online{background:linear-gradient(135deg,#448aff,#82b1ff,#448aff);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 30px rgba(68,138,255,0.3))}
   .logo-sub{font-size:.85rem;color:var(--text-dim);text-align:center;letter-spacing:3px;text-transform:uppercase;margin-bottom:36px}
-
-  .skull-icon{width:80px;height:80px;margin:0 auto 8px}
-  .skull-icon svg{width:100%;height:100%}
-
+  .skull-icon{width:80px;height:80px;margin:0 auto 8px}.skull-icon svg{width:100%;height:100%}
   .input-group{width:100%;margin-bottom:16px}
   .input-group label{display:block;font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}
-  .input-group input{width:100%;padding:14px 18px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:inherit;font-size:1rem;outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none}
+  .input-group input{width:100%;padding:14px 18px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:inherit;font-size:1rem;outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none}
   .input-group input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
   .input-group input::placeholder{color:var(--text-dim);opacity:.6}
-
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:15px 32px;border:none;border-radius:var(--radius-sm);font-family:'Dela Gothic One',cursive;font-size:1rem;cursor:pointer;transition:all .2s;user-select:none;letter-spacing:.5px;width:100%;position:relative;overflow:hidden}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:15px 32px;border:none;border-radius:var(--radius-sm);font-family:'Dela Gothic One',cursive;font-size:1rem;cursor:pointer;transition:all .2s;user-select:none;letter-spacing:.5px;width:100%;overflow:hidden}
   .btn:disabled{opacity:.4;pointer-events:none}
   .btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 24px var(--accent-glow)}
   .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px var(--accent-glow)}
   .btn-primary:active{transform:translateY(0)}
-  .btn-online{background:var(--online);color:#fff;box-shadow:0 4px 24px var(--online-glow)}
-  .btn-online:hover{transform:translateY(-2px);box-shadow:0 8px 32px var(--online-glow)}
   .btn-secondary{background:var(--surface2);color:var(--text);border:1.5px solid var(--border)}
   .btn-secondary:hover{border-color:var(--accent);background:var(--accent-soft)}
   .btn-ghost{background:transparent;color:var(--text-dim);padding:10px 20px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:1px;text-transform:uppercase}
   .btn-ghost:hover{color:var(--accent)}
   .btn-small{padding:10px 20px;font-size:.8rem;width:auto}
-
-  .mode-cards{display:flex;flex-direction:column;gap:12px;width:100%;margin:8px 0 20px}
-  .mode-card{padding:24px 20px;background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all .25s;user-select:none;position:relative;overflow:hidden}
-  .mode-card::before{content:'';position:absolute;top:0;right:0;width:120px;height:120px;border-radius:50%;transform:translate(40%,-40%);opacity:.06;transition:opacity .25s}
-  .mode-card:hover{transform:translateY(-2px)}
-  .mode-card:hover::before{opacity:.1}
-  .mode-card.local-card::before{background:var(--accent)}
-  .mode-card.online-card::before{background:var(--online)}
-  .mode-card:hover.local-card{border-color:var(--accent)}
-  .mode-card:hover.online-card{border-color:var(--online)}
-  .mode-icon{font-size:2rem;margin-bottom:8px}
-  .mode-title{font-family:'Dela Gothic One',cursive;font-size:1.1rem;margin-bottom:4px}
-  .mode-desc{font-size:.85rem;color:var(--text-dim);line-height:1.5}
-  .mode-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
-  .badge-local{background:rgba(255,58,92,0.12);color:var(--accent)}
-  .badge-online{background:rgba(68,138,255,0.12);color:var(--online)}
-
   .player-list{width:100%;margin:12px 0}
   .player-chip{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px;animation:fadeUp .3s ease}
   .player-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;flex-shrink:0}
   .player-name{font-weight:500;flex:1;font-size:.95rem}
-  .player-badge{padding:2px 8px;border-radius:12px;font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase}
-  .badge-host{background:rgba(255,193,7,0.15);color:var(--warn)}
-  .badge-you{background:rgba(0,230,118,0.12);color:var(--safe)}
   .player-remove{width:28px;height:28px;border-radius:50%;background:rgba(255,58,92,0.1);border:none;cursor:pointer;color:var(--accent);font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
   .player-remove:hover{background:rgba(255,58,92,0.2)}
   .player-count{text-align:center;font-size:.8rem;color:var(--text-dim);margin-top:4px;letter-spacing:1px}
-
   .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;margin:12px 0}
   .cat-card{padding:16px 12px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);text-align:center;cursor:pointer;transition:all .2s;user-select:none}
   .cat-card:hover{border-color:var(--accent);background:var(--accent-soft)}
   .cat-card.selected{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 3px var(--accent-glow)}
   .cat-icon{font-size:1.8rem;margin-bottom:6px}
   .cat-name{font-weight:700;font-size:.8rem;letter-spacing:1px;text-transform:uppercase}
-
-  .room-code-display{font-family:'Dela Gothic One',cursive;font-size:clamp(2rem,8vw,3rem);letter-spacing:8px;text-align:center;padding:20px 20px 28px;background:var(--surface);border:2px dashed var(--border);border-radius:var(--radius);margin:16px 0;width:100%;color:var(--online);cursor:pointer;transition:all .2s;position:relative}
-  .room-code-display:hover{border-color:var(--online)}
-  .room-code-display .copy-hint{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);font-family:'DM Sans',sans-serif;font-size:.65rem;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase}
-
-  .status-bar{width:100%;padding:10px 16px;border-radius:var(--radius-sm);display:flex;align-items:center;gap:8px;font-size:.8rem;margin-bottom:12px;background:var(--surface);border:1px solid var(--border)}
-  .status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-  .status-dot.connected{background:var(--safe);box-shadow:0 0 8px var(--safe-glow)}
-  .status-dot.syncing{background:var(--online);animation:pulse 1s infinite}
-
-  /* ── REVEAL CARD ── */
   .reveal-card{width:100%;max-width:360px;aspect-ratio:3/4;perspective:1000px;cursor:pointer;margin:20px auto;user-select:none}
   .reveal-inner{width:100%;height:100%;position:relative;transition:transform .6s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d}
   .reveal-card.flipped .reveal-inner{transform:rotateY(180deg)}
@@ -137,52 +67,31 @@
   .reveal-role.safe{background:rgba(0,230,118,0.12);color:var(--safe)}
   .reveal-word{font-family:'Dela Gothic One',cursive;font-size:clamp(1.6rem,6vw,2.4rem);text-align:center;word-break:break-word;line-height:1.3;margin:8px 0}
   .reveal-hint{font-size:.8rem;color:var(--text-dim);margin-top:12px;text-align:center}
-
-  /* ── IMPOSTER HINT BOX ── */
   .imposter-hint-box{margin-top:16px;padding:12px 20px;border-radius:var(--radius-sm);background:rgba(255,193,7,0.06);border:1.5px solid rgba(255,193,7,0.2);text-align:center;animation:glowPulse 3s ease infinite;width:100%}
   .imposter-hint-label{font-size:.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--warn);margin-bottom:4px}
   .imposter-hint-word{font-family:'Dela Gothic One',cursive;font-size:1.3rem;color:var(--warn)}
-
   .pass-overlay{position:fixed;inset:0;z-index:100;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;padding:32px}
   .pass-overlay.active{display:flex;animation:fadeUp .3s ease}
   .pass-icon{font-size:4rem;margin-bottom:20px;animation:bounce 1.5s infinite}
   .pass-text{font-family:'Dela Gothic One',cursive;font-size:1.3rem;text-align:center;margin-bottom:8px}
   .pass-sub{color:var(--text-dim);text-align:center;margin-bottom:32px}
-
-  /* ── CLUE LOG ── */
   .clue-log{width:100%;margin:12px 0;max-height:300px;overflow-y:auto}
   .clue-entry{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);margin-bottom:6px;animation:popIn .3s ease}
   .clue-entry .clue-round-badge{font-size:.6rem;font-weight:700;color:var(--text-dim);letter-spacing:1px;min-width:20px}
   .clue-entry .clue-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0}
   .clue-entry .clue-name{font-size:.8rem;color:var(--text-dim);min-width:50px}
   .clue-entry .clue-word{font-family:'Dela Gothic One',cursive;font-size:.95rem;flex:1;text-align:right;letter-spacing:1px}
-
   .round-indicator{font-family:'Dela Gothic One',cursive;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);text-align:center;margin:8px 0;padding:8px 16px;background:var(--surface);border-radius:20px;border:1px solid var(--border)}
   .round-indicator span{color:var(--warn)}
-
   .turn-banner{width:100%;padding:20px;text-align:center;background:var(--surface);border:2px solid var(--warn);border-radius:var(--radius);margin:16px 0}
   .turn-banner .turn-name{font-family:'Dela Gothic One',cursive;font-size:1.3rem;margin-bottom:4px;color:var(--warn)}
   .turn-banner .turn-sub{font-size:.85rem;color:var(--text-dim)}
-  .turn-banner.your-turn{border-color:var(--safe);background:rgba(0,230,118,0.04)}
-  .turn-banner.your-turn .turn-name{color:var(--safe)}
-
-  .clue-input-area{width:100%;display:flex;gap:8px;margin:12px 0}
-  .clue-input-area input{flex:1;padding:14px 18px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'Dela Gothic One',cursive;font-size:1.1rem;outline:none;text-align:center;letter-spacing:2px;transition:border-color .2s,box-shadow .2s}
-  .clue-input-area input:focus{border-color:var(--safe);box-shadow:0 0 0 3px var(--safe-glow)}
-
   .vote-card{width:100%;padding:14px 16px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:12px;user-select:none}
   .vote-card:hover{border-color:var(--accent)}
   .vote-card.voted{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 3px var(--accent-glow)}
-  .vote-card.disabled{opacity:.4;pointer-events:none}
-  .vote-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;flex-shrink:0}
-  .vote-name{flex:1;font-weight:500}
   .vote-check{color:var(--accent);font-size:1.2rem;display:none}
   .vote-card.voted .vote-check{display:block}
   .vote-count-badge{padding:4px 12px;border-radius:20px;font-size:.8rem;font-weight:700;background:rgba(255,58,92,0.1);color:var(--accent)}
-
-  .waiting-spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--online);border-radius:50%;animation:spin .8s linear infinite;margin:20px auto}
-  .waiting-text{text-align:center;color:var(--text-dim);font-size:.9rem;margin:8px 0;animation:pulse 2s infinite}
-
   .result-title{font-family:'Dela Gothic One',cursive;font-size:clamp(1.6rem,5vw,2.2rem);text-align:center;margin:16px 0 8px}
   .result-sub{color:var(--text-dim);text-align:center;margin-bottom:24px;font-size:.95rem}
   .result-reveal-box{width:100%;padding:24px;border-radius:var(--radius);text-align:center;margin-bottom:20px}
@@ -192,14 +101,12 @@
   .result-reveal-name{font-family:'Dela Gothic One',cursive;font-size:1.4rem;margin-bottom:4px}
   .result-reveal-word{font-size:.9rem;color:var(--text-dim)}
   .result-hint-note{font-size:.8rem;color:var(--warn);margin-top:6px;font-style:italic}
-
   .scores-list{width:100%;margin:8px 0 20px}
   .score-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius-sm);margin-bottom:4px}
   .score-row.highlight{background:rgba(255,193,7,0.06)}
   .score-pos{font-weight:700;color:var(--text-dim);width:24px;text-align:center;font-size:.85rem}
   .score-name{flex:1;font-weight:500}
   .score-pts{font-family:'Dela Gothic One',cursive;font-size:.95rem;color:var(--accent)}
-
   .section-title{font-family:'Dela Gothic One',cursive;font-size:1.1rem;width:100%;margin:20px 0 12px;letter-spacing:.5px}
   .settings-row{width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border)}
   .settings-label{font-weight:500;font-size:.95rem}
@@ -207,470 +114,154 @@
   .stepper-btn{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
   .stepper-btn:hover{border-color:var(--accent)}
   .stepper-val{font-family:'Dela Gothic One',cursive;font-size:1.1rem;min-width:28px;text-align:center}
-
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--surface2);border:1px solid var(--border);padding:12px 24px;border-radius:var(--radius-sm);font-size:.85rem;z-index:200;transition:transform .3s ease;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,0.4)}
   .toast.show{transform:translateX(-50%) translateY(0)}
-
-  @media(max-width:400px){.cat-grid{gap:8px}.cat-card{padding:12px 8px}.cat-icon{font-size:1.4rem}.reveal-card{max-width:300px}.mode-card{padding:18px 16px}}
-
+  @media(max-width:400px){.cat-grid{gap:8px}.cat-card{padding:12px 8px}.cat-icon{font-size:1.4rem}.reveal-card{max-width:300px}}
   .gap-8{height:8px}.gap-12{height:12px}.gap-16{height:16px}.gap-24{height:24px}
   .w-full{width:100%}.text-center{text-align:center}.text-dim{color:var(--text-dim);font-size:.85rem}
-  .mb-4{margin-bottom:4px}.mb-8{margin-bottom:8px}.mb-12{margin-bottom:12px}.mb-16{margin-bottom:16px}
+  .mb-8{margin-bottom:8px}.mb-16{margin-bottom:16px}
   .flex-row{display:flex;gap:10px;width:100%}.flex-row>*{flex:1}
   .hidden{display:none!important}
-
   ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 </style>
 </head>
 <body>
-
 <div class="bg-grid"></div>
-<div class="bg-glow" id="bgGlow"></div>
+<div class="bg-glow"></div>
 <div class="toast" id="toast"></div>
 
-<!-- ═══════ HOME ═══════ -->
 <div class="screen active" id="screenHome">
   <div class="skull-icon"><svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="44" r="32" fill="#1c1c28" stroke="#ff3a5c" stroke-width="2.5"></circle><circle cx="38" cy="40" r="8" fill="#ff3a5c" opacity=".8"></circle><circle cx="62" cy="40" r="8" fill="#ff3a5c" opacity=".8"></circle><rect x="44" y="52" width="4" height="10" rx="2" fill="#ff3a5c" opacity=".5"></rect><rect x="52" y="52" width="4" height="10" rx="2" fill="#ff3a5c" opacity=".5"></rect><path d="M34 70 Q50 82 66 70" stroke="#ff3a5c" stroke-width="2" fill="none" opacity=".4"></path></svg></div>
   <div class="logo">IMPOSTER</div>
   <div class="logo-sub">Find the fake</div>
-  <div class="mode-cards">
-    <div class="mode-card local-card" onclick="startLocalMode()"><div class="mode-badge badge-local">LOCAL</div><div class="mode-icon">📱</div><div class="mode-title">Pass &amp; Play</div><div class="mode-desc">Share one device. Say your clue word out loud each turn.</div></div>
-    <div class="mode-card online-card" onclick="goTo(&#39;screenOnlineMenu&#39;)"><div class="mode-badge badge-online">ONLINE</div><div class="mode-icon">🌐</div><div class="mode-title">Play Online</div><div class="mode-desc">Own devices. Type your clue word secretly each turn.</div></div>
-  </div>
-  <button class="btn btn-ghost" onclick="goTo(&#39;screenHow&#39;)">HOW TO PLAY</button>
+  <button class="btn btn-primary mb-16" onclick="goTo(&#39;screenSetup&#39;)">NEW GAME</button>
+  <button class="btn btn-secondary" onclick="goTo(&#39;screenHow&#39;)">HOW TO PLAY</button>
 </div>
 
-<!-- ═══════ HOW ═══════ -->
 <div class="screen" id="screenHow">
   <div class="logo logo-sm">HOW TO PLAY</div><div class="gap-16"></div>
   <div style="width:100%;line-height:1.7;color:var(--text-dim)">
-    <p style="margin-bottom:16px"><strong style="color:var(--text)">1. Add Players</strong><br>Local: enter names on one device. Online: everyone joins a room.</p>
+    <p style="margin-bottom:16px"><strong style="color:var(--text)">1. Add Players</strong><br>Enter 3–20 player names. Pass the device around!</p>
     <p style="margin-bottom:16px"><strong style="color:var(--text)">2. Pick a Category</strong><br>Choose from Animals, Food, Movies, Sports, and more.</p>
-    <p style="margin-bottom:16px"><strong style="color:var(--text)">3. See Your Word</strong><br>Crew members see the <span style="color:var(--safe)">same word</span>. The Imposter sees <span style="color:var(--accent)">IMPOSTER</span> — but gets a <span style="color:var(--warn)">similar hint word</span> from the same category to help them bluff!</p>
-    <p style="margin-bottom:16px"><strong style="color:var(--text)">4. Give Clues</strong><br>Take turns giving a <strong style="color:var(--warn)">one-word clue</strong> related to the secret word. Goes around for multiple rounds. The Imposter must bluff using their hint!</p>
-    <p style="margin-bottom:16px"><strong style="color:var(--text)">5. Vote</strong><br>After all clue rounds, everyone votes on who they think the Imposter is.</p>
-    <p><strong style="color:var(--text)">6. Scoring</strong><br><span style="color:var(--safe)">Crew</span> earns 10pts for catching. <span style="color:var(--accent)">Imposter</span> earns 15pts for surviving!</p>
+    <p style="margin-bottom:16px"><strong style="color:var(--text)">3. See Your Word</strong><br>Crew sees the <span style="color:var(--safe)">same word</span>. Imposter sees <span style="color:var(--accent)">IMPOSTER</span> + a <span style="color:var(--warn)">similar hint word</span>.</p>
+    <p style="margin-bottom:16px"><strong style="color:var(--text)">4. Give Clues</strong><br>Take turns saying a <strong style="color:var(--warn)">one-word clue</strong>. The Imposter must bluff!</p>
+    <p style="margin-bottom:16px"><strong style="color:var(--text)">5. Vote</strong><br>Everyone votes on who they think the Imposter is.</p>
+    <p><strong style="color:var(--text)">6. Scoring</strong><br><span style="color:var(--safe)">Crew</span> +10pts for catching. <span style="color:var(--accent)">Imposter</span> +15pts for surviving!</p>
   </div>
   <div class="gap-24"></div><button class="btn btn-ghost" onclick="goTo(&#39;screenHome&#39;)">← BACK</button>
 </div>
 
-<!-- ═══════ LOCAL SETUP ═══════ -->
-<div class="screen" id="screenLocalSetup">
-  <div class="logo logo-sm">GAME SETUP</div><div class="text-dim mb-16">Pass &amp; Play Mode</div>
-  <div class="input-group"><label>Add Player</label><div style="display:flex;gap:8px"><input type="text" id="localPlayerInput" placeholder="Enter name..." maxlength="16" onkeydown="if(event.key===&#39;Enter&#39;)localAddPlayer()"><button class="btn btn-primary btn-small" style="width:auto;flex-shrink:0" onclick="localAddPlayer()">+</button></div></div>
-  <div class="player-list" id="localPlayerList"></div>
-  <div class="player-count" id="localPlayerCount">0 players — need at least 3</div>
-  <div class="section-title">Category</div><div class="cat-grid" id="localCatGrid"><div class="cat-card"><div class="cat-icon">🐾</div><div class="cat-name">Animals</div></div><div class="cat-card"><div class="cat-icon">🍕</div><div class="cat-name">Food</div></div><div class="cat-card"><div class="cat-icon">🎬</div><div class="cat-name">Movies</div></div><div class="cat-card"><div class="cat-icon">⚽</div><div class="cat-name">Sports</div></div><div class="cat-card"><div class="cat-icon">🌍</div><div class="cat-name">Countries</div></div><div class="cat-card"><div class="cat-icon">💼</div><div class="cat-name">Jobs</div></div><div class="cat-card"><div class="cat-icon">🏛️</div><div class="cat-name">Places</div></div><div class="cat-card"><div class="cat-icon">💻</div><div class="cat-name">Tech</div></div><div class="cat-card"><div class="cat-icon">🎵</div><div class="cat-name">Music</div></div><div class="cat-card"><div class="cat-icon">👗</div><div class="cat-name">Clothing</div></div><div class="cat-card"><div class="cat-icon">🏠</div><div class="cat-name">Everyday</div></div></div>
+<div class="screen" id="screenSetup">
+  <div class="logo logo-sm">GAME SETUP</div><div class="gap-16"></div>
+  <div class="input-group"><label>Add Player</label><div style="display:flex;gap:8px"><input type="text" id="inp" placeholder="Enter name..." maxlength="16" onkeydown="if(event.key===&#39;Enter&#39;)addP()"><button class="btn btn-primary btn-small" style="width:auto;flex-shrink:0" onclick="addP()">+</button></div></div>
+  <div class="player-list" id="pList"></div>
+  <div class="player-count" id="pCount">0 players — need at least 3</div>
+  <div class="section-title">Category</div><div class="cat-grid" id="catGrid"><div class="cat-card"><div class="cat-icon">🐾</div><div class="cat-name">Animals</div></div><div class="cat-card"><div class="cat-icon">🍕</div><div class="cat-name">Food</div></div><div class="cat-card"><div class="cat-icon">🎬</div><div class="cat-name">Movies</div></div><div class="cat-card"><div class="cat-icon">⚽</div><div class="cat-name">Sports</div></div><div class="cat-card"><div class="cat-icon">🌍</div><div class="cat-name">Countries</div></div><div class="cat-card"><div class="cat-icon">💼</div><div class="cat-name">Jobs</div></div><div class="cat-card"><div class="cat-icon">🏛️</div><div class="cat-name">Places</div></div><div class="cat-card"><div class="cat-icon">💻</div><div class="cat-name">Tech</div></div><div class="cat-card"><div class="cat-icon">🎵</div><div class="cat-name">Music</div></div><div class="cat-card"><div class="cat-icon">👗</div><div class="cat-name">Clothing</div></div><div class="cat-card"><div class="cat-icon">🏠</div><div class="cat-name">Everyday</div></div></div>
   <div class="section-title">Settings</div>
   <div style="width:100%">
-    <div class="settings-row"><span class="settings-label">Imposters</span><div class="settings-value"><button class="stepper-btn" onclick="localChangeImposters(-1)">−</button><span class="stepper-val" id="localImposterCount">1</span><button class="stepper-btn" onclick="localChangeImposters(1)">+</button></div></div>
-    <div class="settings-row"><span class="settings-label">Clue Rounds</span><div class="settings-value"><button class="stepper-btn" onclick="localChangeRounds(-1)">−</button><span class="stepper-val" id="localRoundsVal">3</span><button class="stepper-btn" onclick="localChangeRounds(1)">+</button></div></div>
+    <div class="settings-row"><span class="settings-label">Imposters</span><div class="settings-value"><button class="stepper-btn" onclick="chgImp(-1)">−</button><span class="stepper-val" id="impVal">1</span><button class="stepper-btn" onclick="chgImp(1)">+</button></div></div>
+    <div class="settings-row"><span class="settings-label">Clue Rounds</span><div class="settings-value"><button class="stepper-btn" onclick="chgRnd(-1)">−</button><span class="stepper-val" id="rndVal">3</span><button class="stepper-btn" onclick="chgRnd(1)">+</button></div></div>
   </div>
   <div class="gap-24"></div>
-  <button class="btn btn-primary" id="localStartBtn" onclick="localStartGame()" disabled="">START GAME</button>
+  <button class="btn btn-primary" id="startBtn" onclick="startGame()" disabled="">START GAME</button>
   <div class="gap-8"></div><button class="btn btn-ghost" onclick="goTo(&#39;screenHome&#39;)">← BACK</button>
 </div>
 
-<!-- ═══════ LOCAL REVEAL ═══════ -->
-<div class="screen" id="screenLocalReveal">
-  <div class="logo logo-sm" id="localRevealName"></div><div class="text-dim mb-16">Tap the card to see your role</div>
-  <div class="reveal-card" id="localRevealCard" onclick="localFlipCard()"><div class="reveal-inner"><div class="reveal-front"><div class="reveal-front-icon">🔒</div><div class="reveal-front-text">Tap to Reveal</div></div><div class="reveal-back" id="localRevealBack"><div class="reveal-role" id="localRevealRole"></div><div class="reveal-word" id="localRevealWord"></div><div id="localRevealHintBox" class="imposter-hint-box hidden"><div class="imposter-hint-label">Your Hint</div><div class="imposter-hint-word" id="localRevealHintWord"></div></div><div class="reveal-hint" id="localRevealHint"></div></div></div></div>
-  <button class="btn btn-secondary" id="localRevealNext" onclick="localNextReveal()" style="display:none">PASS TO NEXT →</button>
+<div class="screen" id="screenReveal">
+  <div class="logo logo-sm" id="revName"></div><div class="text-dim mb-16">Tap the card to see your role</div>
+  <div class="reveal-card" id="revCard" onclick="flipCard()"><div class="reveal-inner"><div class="reveal-front"><div class="reveal-front-icon">🔒</div><div class="reveal-front-text">Tap to Reveal</div></div><div class="reveal-back" id="revBack"><div class="reveal-role" id="revRole"></div><div class="reveal-word" id="revWord"></div><div id="revHintBox" class="imposter-hint-box hidden"><div class="imposter-hint-label">Your Hint</div><div class="imposter-hint-word" id="revHintWord"></div></div><div class="reveal-hint" id="revHint"></div></div></div></div>
+  <button class="btn btn-secondary" id="revNext" onclick="nextReveal()" style="display:none">PASS TO NEXT →</button>
 </div>
 
-<!-- ═══════ LOCAL CLUES ═══════ -->
-<div class="screen" id="screenLocalClues">
+<div class="screen" id="screenClues">
   <div class="logo logo-sm">CLUE TIME</div>
-  <div class="round-indicator" id="localRoundIndicator">Round <span>1</span> of <span>3</span></div>
-  <div class="turn-banner" id="localTurnBanner"><div class="turn-name" id="localTurnName"></div><div class="turn-sub">Say a one-word clue out loud!</div></div>
-  <div class="clue-log" id="localClueLog"></div>
+  <div class="round-indicator" id="rndInd">Round <span>1</span> of <span>3</span></div>
+  <div class="turn-banner"><div class="turn-name" id="turnName"></div><div class="turn-sub">Say a one-word clue out loud!</div></div>
+  <div class="clue-log" id="clueLog"></div>
   <div class="gap-8"></div>
-  <button class="btn btn-primary" id="localClueNextBtn" onclick="localClueNext()">CLUE GIVEN → NEXT</button>
-  <div class="gap-8"></div><button class="btn btn-ghost" onclick="localSkipToVote()">SKIP TO VOTE</button>
+  <button class="btn btn-primary" onclick="clueNext()">CLUE GIVEN → NEXT</button>
+  <div class="gap-8"></div><button class="btn btn-ghost" onclick="goVote()">SKIP TO VOTE</button>
 </div>
 
-<!-- ═══════ LOCAL VOTE ═══════ -->
-<div class="screen" id="screenLocalVote">
+<div class="screen" id="screenVote">
   <div class="logo logo-sm">TIME TO VOTE</div><div class="text-dim mb-8">Review the clues, then vote!</div>
-  <div class="clue-log" id="localVoteClueLog" style="max-height:200px;margin-bottom:16px"></div>
-  <div class="w-full"><div style="font-family:&#39;Dela Gothic One&#39;,cursive;text-align:center;margin-bottom:12px" id="localVotePlayerName"></div><div id="localVoteOptions"></div><div class="gap-12"></div>
-  <button class="btn btn-primary" id="localVoteCastBtn" onclick="localCastVote()" disabled="">CAST VOTE</button><div class="gap-8"></div><button class="btn btn-ghost" onclick="localSkipVote()">SKIP</button></div>
+  <div class="clue-log" id="vClueLog" style="max-height:180px;margin-bottom:12px"></div>
+  <div class="w-full"><div style="font-family:&#39;Dela Gothic One&#39;,cursive;text-align:center;margin-bottom:12px" id="vName"></div><div id="vOpts"></div><div class="gap-12"></div>
+  <button class="btn btn-primary" id="vBtn" onclick="castVote()" disabled="">CAST VOTE</button><div class="gap-8"></div><button class="btn btn-ghost" onclick="skipVote()">SKIP</button></div>
 </div>
 
-<!-- ═══════ LOCAL RESULTS ═══════ -->
-<div class="screen" id="screenLocalResults"><div id="localResultsContent"></div><div class="gap-16"></div><div class="flex-row"><button class="btn btn-primary" onclick="localPlayAgain()">PLAY AGAIN</button><button class="btn btn-secondary" onclick="goTo(&#39;screenHome&#39;)">MAIN MENU</button></div></div>
+<div class="screen" id="screenResults"><div id="resContent"></div><div class="gap-16"></div><div class="flex-row"><button class="btn btn-primary" onclick="startGame()">PLAY AGAIN</button><button class="btn btn-secondary" onclick="goTo(&#39;screenHome&#39;)">MAIN MENU</button></div></div>
 
-<!-- ═══════ PASS OVERLAY ═══════ -->
-<div class="pass-overlay" id="passOverlay"><div class="pass-icon">📱</div><div class="pass-text" id="passText"></div><div class="pass-sub" id="passSub"></div><button class="btn btn-primary" style="max-width:300px" id="passBtn">I'M READY</button></div>
-
-<!-- ════════════════════════════════════ -->
-<!-- ═══════ ONLINE SCREENS ═══════ -->
-<!-- ════════════════════════════════════ -->
-
-<div class="screen" id="screenOnlineMenu">
-  <div class="logo logo-sm logo-online">ONLINE</div><div class="text-dim mb-16">Play on separate devices</div>
-  <div class="input-group"><label>Your Name</label><input type="text" id="onlineName" placeholder="Enter your name..." maxlength="16"></div><div class="gap-8"></div>
-  <button class="btn btn-online mb-12" onclick="onlineCreateRoom()">CREATE ROOM</button>
-  <div style="width:100%;text-align:center;color:var(--text-dim);font-size:.8rem;letter-spacing:2px;margin:8px 0">— OR —</div>
-  <div class="input-group"><label>Room Code</label><input type="text" id="onlineRoomCode" placeholder="Enter 4-letter code..." maxlength="4" style="text-transform:uppercase;letter-spacing:4px;text-align:center;font-family:&#39;Dela Gothic One&#39;,cursive;font-size:1.2rem"></div>
-  <button class="btn btn-secondary mb-12" onclick="onlineJoinRoom()">JOIN ROOM</button>
-  <button class="btn btn-ghost" onclick="goTo(&#39;screenHome&#39;)">← BACK</button>
-</div>
-
-<div class="screen" id="screenOnlineLobby">
-  <div class="logo logo-sm logo-online">LOBBY</div><div class="text-dim mb-4">Share this code with friends</div>
-  <div class="room-code-display" onclick="copyRoomCode()"><span id="lobbyCodeText"></span><span class="copy-hint">tap to copy</span></div>
-  <div class="status-bar"><div class="status-dot syncing" id="lobbyStatusDot"></div><span id="lobbyStatusText">Syncing...</span></div>
-  <div class="player-list" id="lobbyPlayerList"></div><div class="player-count" id="lobbyPlayerCount"></div>
-  <div id="lobbyHostControls" class="hidden w-full">
-    <div class="section-title">Category</div><div class="cat-grid" id="lobbyCatGrid"></div>
-    <div class="section-title">Settings</div>
-    <div style="width:100%">
-      <div class="settings-row"><span class="settings-label">Imposters</span><div class="settings-value"><button class="stepper-btn" onclick="onlineChangeImposters(-1)">−</button><span class="stepper-val" id="onlineImposterCount">1</span><button class="stepper-btn" onclick="onlineChangeImposters(1)">+</button></div></div>
-      <div class="settings-row"><span class="settings-label">Clue Rounds</span><div class="settings-value"><button class="stepper-btn" onclick="onlineChangeRounds(-1)">−</button><span class="stepper-val" id="onlineRoundsVal">3</span><button class="stepper-btn" onclick="onlineChangeRounds(1)">+</button></div></div>
-    </div>
-    <div class="gap-24"></div><button class="btn btn-online" id="onlineStartBtn" onclick="onlineStartGame()" disabled="">START GAME</button>
-  </div>
-  <div id="lobbyGuestView" class="hidden w-full"><div class="gap-16"></div><div class="waiting-spinner"></div><div class="waiting-text">Waiting for host to start...</div></div>
-  <div class="gap-8"></div><button class="btn btn-ghost" onclick="onlineLeaveRoom()">LEAVE ROOM</button>
-</div>
-
-<div class="screen" id="screenOnlineReveal">
-  <div class="logo logo-sm">YOUR ROLE</div><div class="text-dim mb-16">Tap the card to see your role</div>
-  <div class="reveal-card" id="onlineRevealCard" onclick="onlineFlipCard()"><div class="reveal-inner"><div class="reveal-front"><div class="reveal-front-icon">🔒</div><div class="reveal-front-text">Tap to Reveal</div></div><div class="reveal-back" id="onlineRevealBack"><div class="reveal-role" id="onlineRevealRole"></div><div class="reveal-word" id="onlineRevealWord"></div><div id="onlineRevealHintBox" class="imposter-hint-box hidden"><div class="imposter-hint-label">Your Hint</div><div class="imposter-hint-word" id="onlineRevealHintWord"></div></div><div class="reveal-hint" id="onlineRevealHint"></div></div></div></div>
-  <button class="btn btn-online" id="onlineRevealReady" onclick="onlineMarkReady()" style="display:none">I'M READY</button>
-  <div class="waiting-text" id="onlineRevealWaiting" style="display:none">Waiting for all players...</div>
-</div>
-
-<div class="screen" id="screenOnlineClues">
-  <div class="logo logo-sm">CLUE TIME</div>
-  <div class="round-indicator" id="onlineRoundIndicator">Round <span>1</span> of <span>3</span></div>
-  <div class="turn-banner" id="onlineTurnBanner"><div class="turn-name" id="onlineTurnName"></div><div class="turn-sub" id="onlineTurnSub">Waiting...</div></div>
-  <div class="clue-log" id="onlineClueLog"></div>
-  <div id="onlineClueInputArea" class="hidden"><div class="clue-input-area"><input type="text" id="onlineClueInput" placeholder="One word clue..." maxlength="20" onkeydown="if(event.key===&#39;Enter&#39;)onlineSubmitClue()"><button class="btn btn-online btn-small" style="width:auto;flex-shrink:0" onclick="onlineSubmitClue()">SEND</button></div></div>
-  <div class="waiting-text" id="onlineClueWaiting" style="display:none">Waiting for their clue...</div>
-</div>
-
-<div class="screen" id="screenOnlineVote">
-  <div class="logo logo-sm">TIME TO VOTE</div><div class="text-dim mb-8">Review the clues, then vote!</div>
-  <div class="clue-log" id="onlineVoteClueLog" style="max-height:200px;margin-bottom:16px"></div>
-  <div id="onlineVoteOptions" class="w-full"></div><div class="gap-12"></div>
-  <button class="btn btn-primary" id="onlineVoteCastBtn" onclick="onlineCastVote()" disabled="">CAST VOTE</button>
-  <div class="gap-8"></div><div class="waiting-text" id="onlineVoteWaiting" style="display:none">Waiting for all votes...</div>
-</div>
-
-<div class="screen" id="screenOnlineResults"><div id="onlineResultsContent"></div><div class="gap-16"></div>
-  <div id="onlineResultsHostBtns" class="flex-row hidden"><button class="btn btn-online" onclick="onlinePlayAgain()">PLAY AGAIN</button><button class="btn btn-secondary" onclick="onlineLeaveRoom()">LEAVE</button></div>
-  <div id="onlineResultsGuestBtns" class="hidden"><div class="waiting-text">Waiting for host...</div><div class="gap-12"></div><button class="btn btn-ghost" onclick="onlineLeaveRoom()">LEAVE ROOM</button></div>
-</div>
-
+<div class="pass-overlay" id="passOv"><div class="pass-icon">📱</div><div class="pass-text" id="passText"></div><div class="pass-sub" id="passSub"></div><button class="btn btn-primary" style="max-width:300px" id="passBtn">I'M READY</button></div>
 
 <script>
-// ═══════════════════════════════════
-// DATA — with similarity groups for hints
-// ═══════════════════════════════════
-const CATEGORIES={
-  animals:{icon:'🐾',name:'Animals',
-    words:['Dog','Cat','Elephant','Penguin','Tiger','Dolphin','Eagle','Rabbit','Kangaroo','Shark','Giraffe','Octopus','Parrot','Wolf','Turtle','Panda','Chameleon','Koala','Flamingo','Cobra','Horse','Whale','Gorilla','Cheetah','Owl','Fox','Deer','Bear','Crocodile','Jellyfish','Hedgehog','Seal','Bat','Scorpion','Pelican','Moose','Otter','Peacock','Hamster','Lobster','Falcon','Camel','Sloth','Piranha','Swan','Lynx','Iguana','Walrus','Ostrich','Crab'],
-    groups:[['Dog','Wolf','Fox','Lynx'],['Cat','Tiger','Cheetah','Lynx'],['Elephant','Giraffe','Moose','Camel'],['Penguin','Flamingo','Pelican','Swan','Ostrich'],['Dolphin','Whale','Seal','Otter','Walrus'],['Eagle','Falcon','Owl','Pelican'],['Rabbit','Hamster','Hedgehog'],['Kangaroo','Koala','Sloth'],['Shark','Piranha','Crocodile','Lobster','Crab'],['Octopus','Jellyfish','Crab','Lobster'],['Parrot','Peacock','Flamingo','Swan'],['Turtle','Iguana','Chameleon','Crocodile'],['Panda','Bear','Gorilla','Koala'],['Cobra','Scorpion','Iguana','Chameleon'],['Horse','Deer','Camel','Moose'],['Bat','Owl','Falcon']]},
-  food:{icon:'🍕',name:'Food',
-    words:['Pizza','Sushi','Burger','Tacos','Pasta','Ramen','Steak','Croissant','Dumpling','Curry','Pancake','Burrito','Pho','Gelato','Falafel','Paella','Lasagna','Waffles','Nachos','Cheesecake','Pretzel','Shawarma','Omelette','Sashimi','Risotto','Gnocchi','Tiramisu','Brownie','Baklava','Tempura','Ceviche','Chowder','Empanada','Kebab','Muffin','Donut','Crepe','Samosa','Souvlaki','Edamame','Bruschetta','Poutine','Gyoza','Churros','Macaron','Fondue','Bibimbap','Cannoli','Quesadilla','Scone'],
-    groups:[['Pizza','Lasagna','Pasta','Gnocchi','Risotto','Bruschetta'],['Sushi','Sashimi','Tempura','Edamame','Gyoza','Ramen'],['Burger','Steak','Kebab','Shawarma','Souvlaki'],['Tacos','Burrito','Nachos','Quesadilla','Empanada'],['Croissant','Pretzel','Muffin','Scone','Crepe'],['Dumpling','Gyoza','Samosa','Empanada'],['Curry','Falafel','Shawarma','Kebab','Samosa'],['Pancake','Waffles','Crepe','Omelette'],['Gelato','Tiramisu','Cannoli','Macaron'],['Cheesecake','Brownie','Donut','Churros'],['Pho','Ramen','Chowder','Bibimbap'],['Paella','Risotto','Bibimbap','Poutine'],['Baklava','Churros','Macaron','Cannoli'],['Fondue','Poutine','Chowder'],['Ceviche','Sashimi','Sushi']]},
-  movies:{icon:'🎬',name:'Movies',
-    words:['Titanic','Avatar','Frozen','Batman','Shrek','Jaws','Rocky','Gladiator','Inception','Moana','Coco','Up','Brave','Alien','Scream','Grease','Mulan','Bambi','Cars','Bolt','Aladdin','Ratatouille','Psycho','Jurassic Park','Toy Story','Forrest Gump','Braveheart','Interstellar','Dunkirk','Joker','Tangled','Encanto','Nemo','Shutter Island','Spotlight','Zootopia','Arrival','Parasite','Aquaman','Tarzan','Pocahontas','Inside Out','Rango','Passengers','Gravity','Tenet','Onward','Soul','Luca','Sing'],
-    groups:[['Titanic','Gladiator','Braveheart','Grease','Forrest Gump'],['Avatar','Alien','Interstellar','Gravity','Arrival','Passengers'],['Frozen','Moana','Brave','Mulan','Tangled','Encanto','Pocahontas','Aladdin'],['Batman','Joker','Aquaman'],['Shrek','Ratatouille','Rango','Zootopia'],['Jaws','Alien','Scream','Psycho'],['Rocky','Gladiator','Braveheart','Dunkirk'],['Inception','Tenet','Shutter Island','Interstellar'],['Coco','Soul','Inside Out','Encanto','Onward'],['Up','Bolt','Cars','Toy Story','Nemo','Luca'],['Bambi','Tarzan','Pocahontas'],['Parasite','Spotlight','Arrival'],['Sing','Ratatouille','Rango'],['Gravity','Interstellar','Passengers']]},
-  sports:{icon:'⚽',name:'Sports',
-    words:['Soccer','Tennis','Basketball','Swimming','Boxing','Golf','Cricket','Rugby','Hockey','Surfing','Skiing','Fencing','Archery','Volleyball','Wrestling','Badminton','Cycling','Rowing','Karate','Bowling','Baseball','Skateboarding','Polo','Lacrosse','Diving','Gymnastics','Snowboarding','Judo','Taekwondo','Squash','Handball','Darts','Snooker','Table Tennis','Water Polo','Bobsled','Luge','Triathlon','Marathon','Decathlon','Javelin','Shot Put','Discus','Hurdles','Relay','Sailing','Canoeing','Climbing','Weightlifting','Trampoline'],
-    groups:[['Soccer','Rugby','Hockey','Lacrosse','Handball','Cricket'],['Tennis','Badminton','Squash','Table Tennis'],['Basketball','Volleyball','Handball','Water Polo'],['Swimming','Diving','Surfing','Water Polo','Sailing','Canoeing'],['Boxing','Wrestling','Karate','Judo','Taekwondo','Fencing'],['Golf','Bowling','Darts','Snooker','Archery'],['Skiing','Snowboarding','Bobsled','Luge'],['Cycling','Skateboarding','Rowing','Triathlon'],['Marathon','Triathlon','Decathlon','Hurdles','Relay'],['Javelin','Shot Put','Discus','Hammer Throw'],['Gymnastics','Trampoline','Diving','Climbing'],['Polo','Lacrosse','Cricket','Hockey'],['Sailing','Canoeing','Rowing','Surfing'],['Weightlifting','Wrestling','Boxing']]},
-  countries:{icon:'🌍',name:'Countries',
-    words:['Japan','Brazil','France','Egypt','Australia','Canada','Mexico','India','Italy','Kenya','Norway','Peru','Thailand','Greece','Iceland','Morocco','Cuba','Nepal','Chile','Ireland','Spain','Germany','Portugal','Argentina','Colombia','Turkey','Vietnam','Indonesia','Philippines','South Korea','Sweden','Finland','Denmark','Switzerland','Austria','Netherlands','Poland','Croatia','Jamaica','New Zealand','Singapore','Malaysia','Cambodia','Ethiopia','Tanzania','Ghana','Nigeria','South Africa','Mongolia','Fiji'],
-    groups:[['Japan','South Korea','Vietnam','Thailand','Cambodia'],['Brazil','Argentina','Chile','Peru','Colombia'],['France','Spain','Italy','Portugal','Greece'],['Egypt','Morocco','Ethiopia','Tanzania','Kenya'],['Australia','New Zealand','Fiji','Philippines','Indonesia'],['Canada','Sweden','Norway','Iceland','Finland'],['Mexico','Cuba','Jamaica','Colombia'],['India','Nepal','Indonesia','Malaysia','Singapore'],['Germany','Austria','Switzerland','Netherlands','Poland'],['Turkey','Greece','Croatia','Morocco'],['Denmark','Sweden','Finland','Norway','Iceland'],['Nigeria','Ghana','South Africa','Ethiopia','Tanzania'],['Mongolia','Nepal','Cambodia'],['Ireland','Scotland','Denmark']]},
-  jobs:{icon:'💼',name:'Jobs',
-    words:['Doctor','Pilot','Chef','Teacher','Astronaut','Firefighter','Detective','Plumber','Dentist','Farmer','Barista','Lifeguard','Mechanic','Vet','Librarian','Architect','Surgeon','Baker','Carpenter','Electrician','Nurse','Paramedic','Lawyer','Judge','Accountant','Journalist','Photographer','Comedian','Magician','Janitor','Butcher','Florist','Taxi Driver','Bus Driver','Ship Captain','Ranger','Zookeeper','Pharmacist','Optician','Therapist','Professor','Principal','Mayor','Diplomat','Translator','DJ','Stuntman','Blacksmith','Locksmith','Tailor'],
-    groups:[['Doctor','Surgeon','Dentist','Nurse','Paramedic','Vet','Pharmacist','Optician','Therapist'],['Pilot','Astronaut','Ship Captain','Bus Driver','Taxi Driver'],['Chef','Baker','Barista','Butcher'],['Teacher','Professor','Principal','Librarian'],['Firefighter','Paramedic','Lifeguard','Ranger'],['Detective','Lawyer','Judge'],['Plumber','Electrician','Mechanic','Carpenter','Locksmith','Blacksmith'],['Farmer','Florist','Zookeeper','Ranger'],['Journalist','Photographer','Translator'],['Comedian','Magician','DJ','Stuntman'],['Architect','Carpenter','Blacksmith'],['Accountant','Lawyer','Diplomat','Mayor'],['Janitor','Locksmith','Plumber'],['Tailor','Florist','Baker']]},
-  places:{icon:'🏛️',name:'Places',
-    words:['Beach','Library','Hospital','Airport','Castle','Museum','Stadium','Gym','Restaurant','Cinema','Zoo','Market','Temple','Aquarium','Bakery','Laundromat','Lighthouse','Volcano','Waterfall','Cave','School','Prison','Pharmacy','Bank','Post Office','Church','Mosque','Synagogue','Courthouse','Fire Station','Police Station','Farm','Vineyard','Harbor','Pier','Skatepark','Arcade','Spa','Hotel','Motel','Campsite','Cabin','Treehouse','Subway Station','Parking Garage','Greenhouse','Observatory','Planetarium','Junkyard','Rooftop'],
-    groups:[['Beach','Pier','Harbor','Lighthouse'],['Library','Museum','Observatory','Planetarium'],['Hospital','Pharmacy','Spa'],['Airport','Subway Station','Harbor'],['Castle','Church','Mosque','Synagogue','Temple','Courthouse'],['Stadium','Skatepark','Arcade','Gym'],['Restaurant','Bakery','Market','Vineyard'],['Cinema','Arcade','Stadium'],['Zoo','Aquarium','Farm'],['Lighthouse','Observatory','Rooftop'],['Volcano','Cave','Waterfall','Campsite'],['School','Library','Courthouse'],['Prison','Police Station','Courthouse'],['Hotel','Motel','Cabin','Campsite','Treehouse'],['Fire Station','Police Station','Post Office'],['Greenhouse','Farm','Vineyard'],['Parking Garage','Subway Station','Laundromat','Junkyard']]},
-  tech:{icon:'💻',name:'Tech',
-    words:['Laptop','Drone','Robot','Bluetooth','WiFi','Keyboard','Printer','Webcam','Microchip','Tablet','Smartwatch','VR Headset','USB Drive','Monitor','Router','Speaker','Charger','Mouse','Projector','Satellite','Headphones','Microphone','Hard Drive','SSD','Motherboard','GPU','RAM','Server','Firewall','Antenna','Joystick','Controller','Stylus','Scanner','Modem','Ethernet','Hologram','AI Assistant','Chatbot','Algorithm','Blockchain','Cryptocurrency','QR Code','Barcode','Thermostat','Solar Panel','Battery','Radar','Sonar','Laser'],
-    groups:[['Laptop','Tablet','Monitor','Keyboard','Mouse'],['Drone','Robot','Satellite','Radar','Sonar'],['Bluetooth','WiFi','Router','Modem','Ethernet','Antenna'],['Printer','Scanner','Projector'],['Webcam','Microphone','Headphones','Speaker'],['Microchip','Motherboard','GPU','RAM','SSD'],['Smartwatch','VR Headset','Controller','Joystick'],['USB Drive','Hard Drive','SSD','Server'],['Charger','Battery','Solar Panel'],['Firewall','Server','Router','Modem'],['AI Assistant','Chatbot','Algorithm'],['Blockchain','Cryptocurrency','QR Code','Barcode'],['Hologram','Laser','Projector'],['Thermostat','Solar Panel','Battery'],['Joystick','Controller','Mouse','Stylus'],['Radar','Sonar','Satellite','Antenna']]},
-  music:{icon:'🎵',name:'Music',
-    words:['Guitar','Piano','Drums','Violin','Trumpet','Flute','Saxophone','Ukulele','Harp','Cello','Banjo','Harmonica','Tuba','Bagpipes','Maracas','Xylophone','Accordion','Tambourine','Bongos','Clarinet','Bass Guitar','Mandolin','Sitar','Didgeridoo','Oboe','French Horn','Trombone','Piccolo','Organ','Synthesizer','Turntable','Kazoo','Triangle','Cowbell','Gong','Steelpan','Lyre','Lute','Zither','Dulcimer','Theremin','Cajon','Djembe','Tabla','Conga','Timpani','Snare Drum','Vibraphone','Kalimba','Ocarina'],
-    groups:[['Guitar','Bass Guitar','Ukulele','Banjo','Mandolin','Lute','Sitar'],['Piano','Organ','Synthesizer','Accordion','Xylophone','Vibraphone','Kalimba'],['Drums','Bongos','Tambourine','Maracas','Cajon','Djembe','Tabla','Conga','Timpani','Snare Drum'],['Violin','Cello','Harp','Lyre','Zither','Dulcimer'],['Trumpet','Tuba','French Horn','Trombone'],['Flute','Piccolo','Clarinet','Oboe','Ocarina'],['Saxophone','Clarinet','Oboe'],['Harmonica','Accordion','Kazoo','Bagpipes'],['Bagpipes','Didgeridoo','Ocarina'],['Xylophone','Vibraphone','Steelpan','Gong','Triangle','Cowbell'],['Turntable','Synthesizer','Theremin'],['Sitar','Tabla','Djembe'],['Lyre','Lute','Harp','Zither']]},
-  clothing:{icon:'👗',name:'Clothing',
-    words:['Sneakers','Hoodie','Tuxedo','Bikini','Boots','Kimono','Sombrero','Scarf','Overalls','Cape','Sandals','Gloves','Beanie','Vest','Suspenders','Poncho','Turban','Stilettos','Cardigan','Raincoat','Blazer','Jumpsuit','Wetsuit','Parka','Trench Coat','Flannel','Denim Jacket','Leggings','Cargo Pants','Kilt','Toga','Beret','Fedora','Top Hat','Flip Flops','Crocs','Loafers','Necktie','Bow Tie','Cufflinks','Apron','Ski Mask','Goggles','Mittens','Swimsuit','Robe','Pajamas','Onesie','Tutu','Sarong'],
-    groups:[['Sneakers','Boots','Sandals','Stilettos','Flip Flops','Crocs','Loafers'],['Hoodie','Cardigan','Flannel','Parka','Denim Jacket'],['Tuxedo','Blazer','Vest','Suspenders','Necktie','Bow Tie','Cufflinks'],['Bikini','Swimsuit','Wetsuit','Sarong'],['Kimono','Toga','Robe','Sarong','Kilt'],['Sombrero','Beret','Fedora','Top Hat','Beanie','Turban'],['Scarf','Gloves','Mittens','Beanie'],['Overalls','Jumpsuit','Cargo Pants','Leggings'],['Cape','Poncho','Trench Coat','Raincoat','Parka'],['Ski Mask','Goggles','Beanie','Mittens'],['Pajamas','Robe','Onesie'],['Tutu','Toga','Kimono','Sarong'],['Apron','Overalls','Jumpsuit']]},
-  everyday:{icon:'🏠',name:'Everyday',
-    words:['Toothbrush','Alarm Clock','Keys','Wallet','Umbrella','Sunglasses','Backpack','Headphones','Water Bottle','Coffee Mug','Pen','Notebook','Scissors','Tape','Stapler','Rubber Band','Paper Clip','Envelope','Stamp','Lighter','Candle','Mirror','Comb','Towel','Soap','Sponge','Bucket','Broom','Dustpan','Trash Can','Hanger','Clothespin','Pillow','Blanket','Lamp','Light Bulb','Extension Cord','Remote Control','Battery','Doorbell','Lock','Ladder','Toolbox','Hammer','Screwdriver','Wrench','Tape Measure','Flashlight','Magnifying Glass','Thermos'],
-    groups:[['Toothbrush','Comb','Soap','Towel','Sponge','Mirror'],['Alarm Clock','Remote Control','Doorbell','Light Bulb','Lamp'],['Keys','Wallet','Sunglasses','Headphones','Watch'],['Umbrella','Raincoat','Backpack'],['Water Bottle','Coffee Mug','Thermos'],['Pen','Notebook','Pencil','Envelope','Stamp'],['Scissors','Tape','Stapler','Paper Clip','Rubber Band'],['Lighter','Candle','Flashlight','Lamp','Light Bulb'],['Mirror','Magnifying Glass','Sunglasses'],['Towel','Sponge','Soap','Bucket'],['Broom','Dustpan','Bucket','Sponge','Trash Can'],['Hanger','Clothespin','Basket'],['Pillow','Blanket','Towel'],['Extension Cord','Battery','Charger','Light Bulb'],['Lock','Keys','Doorbell'],['Hammer','Screwdriver','Wrench','Toolbox','Tape Measure'],['Ladder','Toolbox','Flashlight'],['Backpack','Wallet','Keys']]},
+const C={
+  animals:{icon:'🐾',name:'Animals',words:['Dog','Cat','Elephant','Penguin','Tiger','Dolphin','Eagle','Rabbit','Kangaroo','Shark','Giraffe','Octopus','Parrot','Wolf','Turtle','Panda','Chameleon','Koala','Flamingo','Cobra','Horse','Whale','Gorilla','Cheetah','Owl','Fox','Deer','Bear','Crocodile','Jellyfish','Hedgehog','Seal','Bat','Scorpion','Pelican','Moose','Otter','Peacock','Hamster','Lobster','Falcon','Camel','Sloth','Piranha','Swan','Lynx','Iguana','Walrus','Ostrich','Crab'],groups:[['Dog','Wolf','Fox','Lynx'],['Cat','Tiger','Cheetah','Lynx'],['Elephant','Giraffe','Moose','Camel'],['Penguin','Flamingo','Pelican','Swan','Ostrich'],['Dolphin','Whale','Seal','Otter','Walrus'],['Eagle','Falcon','Owl','Pelican'],['Rabbit','Hamster','Hedgehog'],['Kangaroo','Koala','Sloth'],['Shark','Piranha','Crocodile','Lobster','Crab'],['Octopus','Jellyfish','Crab','Lobster'],['Parrot','Peacock','Flamingo','Swan'],['Turtle','Iguana','Chameleon','Crocodile'],['Panda','Bear','Gorilla','Koala'],['Cobra','Scorpion','Iguana','Chameleon'],['Horse','Deer','Camel','Moose'],['Bat','Owl','Falcon']]},
+  food:{icon:'🍕',name:'Food',words:['Pizza','Sushi','Burger','Tacos','Pasta','Ramen','Steak','Croissant','Dumpling','Curry','Pancake','Burrito','Pho','Gelato','Falafel','Paella','Lasagna','Waffles','Nachos','Cheesecake','Pretzel','Shawarma','Omelette','Sashimi','Risotto','Gnocchi','Tiramisu','Brownie','Baklava','Tempura','Ceviche','Chowder','Empanada','Kebab','Muffin','Donut','Crepe','Samosa','Souvlaki','Edamame','Bruschetta','Poutine','Gyoza','Churros','Macaron','Fondue','Bibimbap','Cannoli','Quesadilla','Scone'],groups:[['Pizza','Lasagna','Pasta','Gnocchi','Risotto','Bruschetta'],['Sushi','Sashimi','Tempura','Edamame','Gyoza','Ramen'],['Burger','Steak','Kebab','Shawarma','Souvlaki'],['Tacos','Burrito','Nachos','Quesadilla','Empanada'],['Croissant','Pretzel','Muffin','Scone','Crepe'],['Dumpling','Gyoza','Samosa','Empanada'],['Curry','Falafel','Shawarma','Kebab','Samosa'],['Pancake','Waffles','Crepe','Omelette'],['Gelato','Tiramisu','Cannoli','Macaron'],['Cheesecake','Brownie','Donut','Churros'],['Pho','Ramen','Chowder','Bibimbap'],['Baklava','Churros','Macaron','Cannoli'],['Ceviche','Sashimi','Sushi']]},
+  movies:{icon:'🎬',name:'Movies',words:['Titanic','Avatar','Frozen','Batman','Shrek','Jaws','Rocky','Gladiator','Inception','Moana','Coco','Up','Brave','Alien','Scream','Grease','Mulan','Bambi','Cars','Bolt','Aladdin','Ratatouille','Psycho','Jurassic Park','Toy Story','Forrest Gump','Braveheart','Interstellar','Dunkirk','Joker','Tangled','Encanto','Nemo','Shutter Island','Spotlight','Zootopia','Arrival','Parasite','Aquaman','Tarzan','Pocahontas','Inside Out','Rango','Passengers','Gravity','Tenet','Onward','Soul','Luca','Sing'],groups:[['Titanic','Gladiator','Braveheart','Grease','Forrest Gump'],['Avatar','Alien','Interstellar','Gravity','Arrival','Passengers'],['Frozen','Moana','Brave','Mulan','Tangled','Encanto','Pocahontas','Aladdin'],['Batman','Joker','Aquaman'],['Shrek','Ratatouille','Rango','Zootopia'],['Jaws','Alien','Scream','Psycho'],['Rocky','Gladiator','Braveheart','Dunkirk'],['Inception','Tenet','Shutter Island','Interstellar'],['Coco','Soul','Inside Out','Encanto','Onward'],['Up','Bolt','Cars','Toy Story','Nemo','Luca'],['Bambi','Tarzan','Pocahontas'],['Sing','Ratatouille','Rango']]},
+  sports:{icon:'⚽',name:'Sports',words:['Soccer','Tennis','Basketball','Swimming','Boxing','Golf','Cricket','Rugby','Hockey','Surfing','Skiing','Fencing','Archery','Volleyball','Wrestling','Badminton','Cycling','Rowing','Karate','Bowling','Baseball','Skateboarding','Polo','Lacrosse','Diving','Gymnastics','Snowboarding','Judo','Taekwondo','Squash','Handball','Darts','Snooker','Table Tennis','Water Polo','Bobsled','Luge','Triathlon','Marathon','Decathlon','Javelin','Shot Put','Discus','Hurdles','Relay','Sailing','Canoeing','Climbing','Weightlifting','Trampoline'],groups:[['Soccer','Rugby','Hockey','Lacrosse','Handball','Cricket'],['Tennis','Badminton','Squash','Table Tennis'],['Basketball','Volleyball','Handball','Water Polo'],['Swimming','Diving','Surfing','Water Polo','Sailing','Canoeing'],['Boxing','Wrestling','Karate','Judo','Taekwondo','Fencing'],['Golf','Bowling','Darts','Snooker','Archery'],['Skiing','Snowboarding','Bobsled','Luge'],['Cycling','Skateboarding','Rowing','Triathlon'],['Marathon','Triathlon','Decathlon','Hurdles','Relay'],['Gymnastics','Trampoline','Diving','Climbing'],['Sailing','Canoeing','Rowing','Surfing']]},
+  countries:{icon:'🌍',name:'Countries',words:['Japan','Brazil','France','Egypt','Australia','Canada','Mexico','India','Italy','Kenya','Norway','Peru','Thailand','Greece','Iceland','Morocco','Cuba','Nepal','Chile','Ireland','Spain','Germany','Portugal','Argentina','Colombia','Turkey','Vietnam','Indonesia','Philippines','South Korea','Sweden','Finland','Denmark','Switzerland','Austria','Netherlands','Poland','Croatia','Jamaica','New Zealand','Singapore','Malaysia','Cambodia','Ethiopia','Tanzania','Ghana','Nigeria','South Africa','Mongolia','Fiji'],groups:[['Japan','South Korea','Vietnam','Thailand','Cambodia'],['Brazil','Argentina','Chile','Peru','Colombia'],['France','Spain','Italy','Portugal','Greece'],['Egypt','Morocco','Ethiopia','Tanzania','Kenya'],['Australia','New Zealand','Fiji','Philippines','Indonesia'],['Canada','Sweden','Norway','Iceland','Finland'],['Mexico','Cuba','Jamaica','Colombia'],['India','Nepal','Indonesia','Malaysia','Singapore'],['Germany','Austria','Switzerland','Netherlands','Poland'],['Turkey','Greece','Croatia','Morocco'],['Nigeria','Ghana','South Africa','Ethiopia','Tanzania']]},
+  jobs:{icon:'💼',name:'Jobs',words:['Doctor','Pilot','Chef','Teacher','Astronaut','Firefighter','Detective','Plumber','Dentist','Farmer','Barista','Lifeguard','Mechanic','Vet','Librarian','Architect','Surgeon','Baker','Carpenter','Electrician','Nurse','Paramedic','Lawyer','Judge','Accountant','Journalist','Photographer','Comedian','Magician','Janitor','Butcher','Florist','Taxi Driver','Bus Driver','Ship Captain','Ranger','Zookeeper','Pharmacist','Optician','Therapist','Professor','Principal','Mayor','Diplomat','Translator','DJ','Stuntman','Blacksmith','Locksmith','Tailor'],groups:[['Doctor','Surgeon','Dentist','Nurse','Paramedic','Vet','Pharmacist','Optician','Therapist'],['Pilot','Astronaut','Ship Captain','Bus Driver','Taxi Driver'],['Chef','Baker','Barista','Butcher'],['Teacher','Professor','Principal','Librarian'],['Firefighter','Paramedic','Lifeguard','Ranger'],['Detective','Lawyer','Judge'],['Plumber','Electrician','Mechanic','Carpenter','Locksmith','Blacksmith'],['Farmer','Florist','Zookeeper','Ranger'],['Journalist','Photographer','Translator'],['Comedian','Magician','DJ','Stuntman'],['Tailor','Florist','Baker']]},
+  places:{icon:'🏛️',name:'Places',words:['Beach','Library','Hospital','Airport','Castle','Museum','Stadium','Gym','Restaurant','Cinema','Zoo','Market','Temple','Aquarium','Bakery','Laundromat','Lighthouse','Volcano','Waterfall','Cave','School','Prison','Pharmacy','Bank','Post Office','Church','Mosque','Synagogue','Courthouse','Fire Station','Police Station','Farm','Vineyard','Harbor','Pier','Skatepark','Arcade','Spa','Hotel','Motel','Campsite','Cabin','Treehouse','Subway Station','Parking Garage','Greenhouse','Observatory','Planetarium','Junkyard','Rooftop'],groups:[['Beach','Pier','Harbor','Lighthouse'],['Library','Museum','Observatory','Planetarium'],['Hospital','Pharmacy','Spa'],['Castle','Church','Mosque','Synagogue','Temple','Courthouse'],['Stadium','Skatepark','Arcade','Gym'],['Restaurant','Bakery','Market','Vineyard'],['Zoo','Aquarium','Farm'],['Volcano','Cave','Waterfall','Campsite'],['Hotel','Motel','Cabin','Campsite','Treehouse'],['Fire Station','Police Station','Post Office'],['Greenhouse','Farm','Vineyard']]},
+  tech:{icon:'💻',name:'Tech',words:['Laptop','Drone','Robot','Bluetooth','WiFi','Keyboard','Printer','Webcam','Microchip','Tablet','Smartwatch','VR Headset','USB Drive','Monitor','Router','Speaker','Charger','Mouse','Projector','Satellite','Headphones','Microphone','Hard Drive','SSD','Motherboard','GPU','RAM','Server','Firewall','Antenna','Joystick','Controller','Stylus','Scanner','Modem','Ethernet','Hologram','AI Assistant','Chatbot','Algorithm','Blockchain','Cryptocurrency','QR Code','Barcode','Thermostat','Solar Panel','Battery','Radar','Sonar','Laser'],groups:[['Laptop','Tablet','Monitor','Keyboard','Mouse'],['Drone','Robot','Satellite','Radar','Sonar'],['Bluetooth','WiFi','Router','Modem','Ethernet','Antenna'],['Printer','Scanner','Projector'],['Webcam','Microphone','Headphones','Speaker'],['Microchip','Motherboard','GPU','RAM','SSD'],['Smartwatch','VR Headset','Controller','Joystick'],['USB Drive','Hard Drive','SSD','Server'],['Charger','Battery','Solar Panel'],['Hologram','Laser','Projector'],['Joystick','Controller','Mouse','Stylus'],['Radar','Sonar','Satellite','Antenna']]},
+  music:{icon:'🎵',name:'Music',words:['Guitar','Piano','Drums','Violin','Trumpet','Flute','Saxophone','Ukulele','Harp','Cello','Banjo','Harmonica','Tuba','Bagpipes','Maracas','Xylophone','Accordion','Tambourine','Bongos','Clarinet','Bass Guitar','Mandolin','Sitar','Didgeridoo','Oboe','French Horn','Trombone','Piccolo','Organ','Synthesizer','Turntable','Kazoo','Triangle','Cowbell','Gong','Steelpan','Lyre','Lute','Zither','Dulcimer','Theremin','Cajon','Djembe','Tabla','Conga','Timpani','Snare Drum','Vibraphone','Kalimba','Ocarina'],groups:[['Guitar','Bass Guitar','Ukulele','Banjo','Mandolin','Lute','Sitar'],['Piano','Organ','Synthesizer','Accordion','Xylophone','Vibraphone','Kalimba'],['Drums','Bongos','Tambourine','Maracas','Cajon','Djembe','Tabla','Conga','Timpani','Snare Drum'],['Violin','Cello','Harp','Lyre','Zither','Dulcimer'],['Trumpet','Tuba','French Horn','Trombone'],['Flute','Piccolo','Clarinet','Oboe','Ocarina'],['Saxophone','Clarinet','Oboe'],['Harmonica','Accordion','Kazoo','Bagpipes'],['Xylophone','Vibraphone','Steelpan','Gong','Triangle','Cowbell'],['Turntable','Synthesizer','Theremin']]},
+  clothing:{icon:'👗',name:'Clothing',words:['Sneakers','Hoodie','Tuxedo','Bikini','Boots','Kimono','Sombrero','Scarf','Overalls','Cape','Sandals','Gloves','Beanie','Vest','Suspenders','Poncho','Turban','Stilettos','Cardigan','Raincoat','Blazer','Jumpsuit','Wetsuit','Parka','Trench Coat','Flannel','Denim Jacket','Leggings','Cargo Pants','Kilt','Toga','Beret','Fedora','Top Hat','Flip Flops','Crocs','Loafers','Necktie','Bow Tie','Cufflinks','Apron','Ski Mask','Goggles','Mittens','Swimsuit','Robe','Pajamas','Onesie','Tutu','Sarong'],groups:[['Sneakers','Boots','Sandals','Stilettos','Flip Flops','Crocs','Loafers'],['Hoodie','Cardigan','Flannel','Parka','Denim Jacket'],['Tuxedo','Blazer','Vest','Suspenders','Necktie','Bow Tie','Cufflinks'],['Bikini','Swimsuit','Wetsuit','Sarong'],['Kimono','Toga','Robe','Sarong','Kilt'],['Sombrero','Beret','Fedora','Top Hat','Beanie','Turban'],['Scarf','Gloves','Mittens','Beanie'],['Cape','Poncho','Trench Coat','Raincoat','Parka'],['Pajamas','Robe','Onesie'],['Apron','Overalls','Jumpsuit']]},
+  everyday:{icon:'🏠',name:'Everyday',words:['Toothbrush','Alarm Clock','Keys','Wallet','Umbrella','Sunglasses','Backpack','Headphones','Water Bottle','Coffee Mug','Pen','Notebook','Scissors','Tape','Stapler','Rubber Band','Paper Clip','Envelope','Stamp','Lighter','Candle','Mirror','Comb','Towel','Soap','Sponge','Bucket','Broom','Dustpan','Trash Can','Hanger','Clothespin','Pillow','Blanket','Lamp','Light Bulb','Extension Cord','Remote Control','Battery','Doorbell','Lock','Ladder','Toolbox','Hammer','Screwdriver','Wrench','Tape Measure','Flashlight','Magnifying Glass','Thermos'],groups:[['Toothbrush','Comb','Soap','Towel','Sponge','Mirror'],['Alarm Clock','Remote Control','Doorbell','Light Bulb','Lamp'],['Keys','Wallet','Sunglasses','Headphones'],['Water Bottle','Coffee Mug','Thermos'],['Pen','Notebook','Envelope','Stamp'],['Scissors','Tape','Stapler','Paper Clip','Rubber Band'],['Lighter','Candle','Flashlight','Lamp','Light Bulb'],['Broom','Dustpan','Bucket','Sponge','Trash Can'],['Pillow','Blanket','Towel'],['Lock','Keys','Doorbell'],['Hammer','Screwdriver','Wrench','Toolbox','Tape Measure'],['Backpack','Wallet','Keys']]},
 };
-const COLORS=['#ff3a5c','#00e676','#448aff','#ffc107','#e040fb','#ff6e40','#00bcd4','#69f0ae','#ffab40','#7c4dff','#f06292','#4dd0e1','#dce775','#ff8a65','#80deea','#a5d6a7','#ef5350','#42a5f5','#ab47bc','#26c6da'];
+const CLR=['#ff3a5c','#00e676','#448aff','#ffc107','#e040fb','#ff6e40','#00bcd4','#69f0ae','#ffab40','#7c4dff','#f06292','#4dd0e1','#dce775','#ff8a65','#80deea','#a5d6a7','#ef5350','#42a5f5','#ab47bc','#26c6da'];
+
+let G={p:[],sc:{},cat:null,imp:1,rnd:3,word:'',hint:'',impIdx:[],revI:0,flip:false,cr:1,ct:0,clues:[],vi:0,votes:{},vs:null};
 
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function goTo(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500)}
-function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ';let r='';for(let i=0;i<4;i++)r+=c[Math.floor(Math.random()*c.length)];return r}
 
-// Get a similar hint word from same category
-function getHintWord(catKey, realWord){
-  const cat=CATEGORIES[catKey];
-  // Find groups containing the real word
-  const matchGroups=cat.groups.filter(g=>g.includes(realWord));
-  // Collect candidate hints from those groups (excluding the real word)
-  let candidates=[];
-  matchGroups.forEach(g=>g.forEach(w=>{if(w!==realWord&&!candidates.includes(w))candidates.push(w)}));
-  // Fallback: random word from category
-  if(candidates.length===0) candidates=cat.words.filter(w=>w!==realWord);
-  return candidates[Math.floor(Math.random()*candidates.length)];
-}
+function getHint(ck,w){const c=C[ck];const mg=c.groups.filter(g=>g.includes(w));let cd=[];mg.forEach(g=>g.forEach(x=>{if(x!==w&&!cd.includes(x))cd.push(x)}));if(!cd.length)cd=c.words.filter(x=>x!==w);return cd[Math.floor(Math.random()*cd.length)]}
 
-function renderCatGrid(cid,sel,fn){const g=document.getElementById(cid);g.innerHTML='';for(const[k,c]of Object.entries(CATEGORIES)){const d=document.createElement('div');d.className='cat-card'+(sel===k?' selected':'');d.innerHTML=`<div class="cat-icon">${c.icon}</div><div class="cat-name">${c.name}</div>`;d.onclick=()=>fn(k);g.appendChild(d)}}
-function renderPlayerList(cid,players,opts={}){const list=document.getElementById(cid);list.innerHTML='';players.forEach((p,i)=>{const name=typeof p==='string'?p:p.name;const d=document.createElement('div');d.className='player-chip';let badges='';if(opts.host&&name===opts.host)badges+='<span class="player-badge badge-host">HOST</span> ';if(opts.you&&name===opts.you)badges+='<span class="player-badge badge-you">YOU</span>';let rm='';if(opts.removable)rm=`<button class="player-remove" onclick="${opts.removeFunc}(${i})">×</button>`;d.innerHTML=`<div class="player-avatar" style="background:${COLORS[i%COLORS.length]}22;color:${COLORS[i%COLORS.length]}">${name.charAt(0).toUpperCase()}</div><div class="player-name">${esc(name)} ${badges}</div>${rm}`;list.appendChild(d)})}
-function renderClueLog(cid,clues,players){const log=document.getElementById(cid);log.innerHTML='';clues.forEach(c=>{const idx=players.indexOf(c.player);const d=document.createElement('div');d.className='clue-entry';d.innerHTML=`<span class="clue-round-badge">R${c.round}</span><div class="clue-avatar" style="background:${COLORS[(idx>=0?idx:0)%COLORS.length]}22;color:${COLORS[(idx>=0?idx:0)%COLORS.length]}">${c.player.charAt(0).toUpperCase()}</div><span class="clue-name">${esc(c.player)}</span><span class="clue-word">${esc(c.word)}</span>`;log.appendChild(d)});log.scrollTop=log.scrollHeight}
+function addP(){const i=document.getElementById('inp'),n=i.value.trim();if(!n||G.p.length>=20||G.p.find(p=>p.toLowerCase()===n.toLowerCase())){i.value='';return}G.p.push(n);if(!G.sc[n])G.sc[n]=0;i.value='';renderP();chk();i.focus()}
+function remP(i){G.p.splice(i,1);renderP();chk()}
+function renderP(){const l=document.getElementById('pList');l.innerHTML='';G.p.forEach((n,i)=>{const d=document.createElement('div');d.className='player-chip';d.innerHTML=`<div class="player-avatar" style="background:${CLR[i%CLR.length]}22;color:${CLR[i%CLR.length]}">${n[0].toUpperCase()}</div><div class="player-name">${esc(n)}</div><button class="player-remove" onclick="remP(${i})">×</button>`;l.appendChild(d)});document.getElementById('pCount').textContent=G.p.length<3?`${G.p.length} player${G.p.length!==1?'s':''} — need at least 3`:`${G.p.length} players ready`}
+function chk(){document.getElementById('startBtn').disabled=G.p.length<3||!G.cat}
+function selCat(k){G.cat=k;renderCat();chk()}
+function renderCat(){const g=document.getElementById('catGrid');g.innerHTML='';for(const[k,c]of Object.entries(C)){const d=document.createElement('div');d.className='cat-card'+(G.cat===k?' selected':'');d.innerHTML=`<div class="cat-icon">${c.icon}</div><div class="cat-name">${c.name}</div>`;d.onclick=()=>selCat(k);g.appendChild(d)}}
+function chgImp(d){const mx=Math.max(1,Math.floor(G.p.length/2)-1)||1;G.imp=Math.max(1,Math.min(mx,G.imp+d));document.getElementById('impVal').textContent=G.imp}
+function chgRnd(d){G.rnd=Math.max(1,Math.min(10,G.rnd+d));document.getElementById('rndVal').textContent=G.rnd}
 
-function buildResultsHTML(crewWins,impNames,word,hintWord,votes,maxV,players,scores,clues){
-  let h=`<div class="result-title">${crewWins?'🎉 CREW WINS!':'☠ IMPOSTER WINS!'}</div>`;
-  h+=`<div class="result-sub">${crewWins?'The Imposter was caught!':'The Imposter got away!'}</div>`;
-  h+=`<div class="result-reveal-box ${crewWins?'crew-wins':'imposter-wins'}"><div class="result-reveal-label">${impNames.length>1?'The Imposters were':'The Imposter was'}</div><div class="result-reveal-name" style="color:var(--accent)">${impNames.map(esc).join(', ')}</div><div class="result-reveal-word">The word was: <strong style="color:var(--safe)">${esc(word||'')}</strong></div>${hintWord?`<div class="result-hint-note">Imposter's hint: "${esc(hintWord)}"</div>`:''}</div>`;
-  if(clues&&clues.length>0){
-    h+=`<div class="section-title" style="font-size:1rem">Clues Given</div><div class="scores-list">`;
-    clues.forEach(c=>{const idx=players.indexOf(c.player);const isI=impNames.includes(c.player);
-      h+=`<div class="score-row"><span style="font-size:.6rem;color:var(--text-dim);min-width:20px">R${c.round}</span><div style="background:${COLORS[(idx>=0?idx:0)%COLORS.length]}22;color:${COLORS[(idx>=0?idx:0)%COLORS.length]};width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0">${c.player.charAt(0).toUpperCase()}</div><span class="score-name">${esc(c.player)}${isI?' <span style="color:var(--accent);font-size:.65rem">☠</span>':''}</span><span style="font-family:'Dela Gothic One',cursive;font-size:.9rem;color:var(--text)">${esc(c.word)}</span></div>`;
-    });h+=`</div>`}
-  const sv=Object.entries(votes).sort((a,b)=>b[1]-a[1]);
+function startGame(){if(G.p.length<3||!G.cat)return;const ws=C[G.cat].words;G.word=ws[Math.floor(Math.random()*ws.length)];G.hint=getHint(G.cat,G.word);const sh=[...Array(G.p.length).keys()].sort(()=>Math.random()-.5);G.impIdx=sh.slice(0,Math.min(G.imp,Math.floor(G.p.length/2)-1)||1);
+  // Randomise reveal and play order
+  G.order=[...Array(G.p.length).keys()].sort(()=>Math.random()-.5);
+  G.revI=0;showPass(G.order[0],'reveal')}
+
+function showPass(i,mode){const o=document.getElementById('passOv');document.getElementById('passText').textContent='Pass to '+G.p[i];document.getElementById('passSub').textContent=mode==='reveal'?'Make sure nobody else is looking!':'Time to vote!';document.getElementById('passBtn').onclick=()=>{o.classList.remove('active');if(mode==='reveal')showReveal(i);else showVoteFor()};o.classList.add('active');if(mode==='reveal')G.revI=i}
+
+function showReveal(i){goTo('screenReveal');document.getElementById('revName').textContent=G.p[i];const isI=G.impIdx.includes(i);document.getElementById('revBack').className='reveal-back '+(isI?'is-imposter':'is-safe');const rl=document.getElementById('revRole');rl.className='reveal-role '+(isI?'imposter':'safe');rl.textContent=isI?'☠ IMPOSTER':'✓ CREW';const wd=document.getElementById('revWord');wd.textContent=isI?'IMPOSTER':G.word;wd.style.color=isI?'var(--accent)':'var(--safe)';const hb=document.getElementById('revHintBox');if(isI){hb.classList.remove('hidden');document.getElementById('revHintWord').textContent=G.hint}else hb.classList.add('hidden');document.getElementById('revHint').textContent=isI?'Use this hint to blend in!':'Remember your word!';G.flip=false;document.getElementById('revCard').classList.remove('flipped');document.getElementById('revNext').style.display='none'}
+function flipCard(){if(G.flip)return;G.flip=true;document.getElementById('revCard').classList.add('flipped');setTimeout(()=>{document.getElementById('revNext').style.display='block'},600)}
+function nextReveal(){G.revI++;if(G.revI<G.p.length)showPass(G.order[G.revI],'reveal');else startClues()}
+
+function startClues(){G.cr=1;G.ct=0;G.clues=[];goTo('screenClues');updClue()}
+function updClue(){document.getElementById('rndInd').innerHTML=`Round <span>${G.cr}</span> of <span>${G.rnd}</span>`;document.getElementById('turnName').textContent=G.p[G.order[G.ct]]+"'s turn";renderLog('clueLog',G.clues)}
+function clueNext(){G.clues.push({player:G.p[G.order[G.ct]],word:'(spoken)',round:G.cr});G.ct++;if(G.ct>=G.p.length){G.ct=0;G.cr++;if(G.cr>G.rnd){goVote();return}}updClue()}
+function renderLog(id,clues){const l=document.getElementById(id);l.innerHTML='';clues.forEach(c=>{const i=G.p.indexOf(c.player);const d=document.createElement('div');d.className='clue-entry';d.innerHTML=`<span class="clue-round-badge">R${c.round}</span><div class="clue-avatar" style="background:${CLR[(i>=0?i:0)%CLR.length]}22;color:${CLR[(i>=0?i:0)%CLR.length]}">${c.player[0].toUpperCase()}</div><span class="clue-name">${esc(c.player)}</span><span class="clue-word">${esc(c.word)}</span>`;l.appendChild(d)});l.scrollTop=l.scrollHeight}
+
+function goVote(){goTo('screenVote');G.votes={};G.p.forEach(p=>G.votes[p]=0);G.vi=0;G.vs=null;G.voteOrder=[...Array(G.p.length).keys()].sort(()=>Math.random()-.5);renderLog('vClueLog',G.clues.filter(c=>c.word!=='(spoken)'));showVoteFor()}
+function showVoteFor(){if(G.vi>=G.p.length){showResults();return}const pi=G.voteOrder[G.vi];document.getElementById('vName').textContent=G.p[pi]+"'s Vote";G.vs=null;document.getElementById('vBtn').disabled=true;const o=document.getElementById('vOpts');o.innerHTML='';G.p.forEach((n,i)=>{if(i===pi)return;const d=document.createElement('div');d.className='vote-card';d.innerHTML=`<div class="player-avatar" style="background:${CLR[i%CLR.length]}22;color:${CLR[i%CLR.length]}">${n[0].toUpperCase()}</div><div class="player-name" style="flex:1;font-weight:500">${esc(n)}</div><div class="vote-check">✓</div>`;d.onclick=()=>{document.querySelectorAll('#vOpts .vote-card').forEach(c=>c.classList.remove('voted'));d.classList.add('voted');G.vs=i;document.getElementById('vBtn').disabled=false};o.appendChild(d)})}
+function castVote(){if(G.vs===null)return;G.votes[G.p[G.vs]]++;G.vi++;if(G.vi<G.p.length)showPass(G.voteOrder[G.vi],'vote');else showResults()}
+function skipVote(){G.vi++;if(G.vi<G.p.length)showPass(G.voteOrder[G.vi],'vote');else showResults()}
+
+function showResults(){goTo('screenResults');let mx=0,vo=[];for(const[n,c]of Object.entries(G.votes)){if(c>mx){mx=c;vo=[n]}else if(c===mx&&c>0)vo.push(n)}
+  const impN=G.impIdx.map(i=>G.p[i]),caught=vo.filter(n=>impN.includes(n)),cw=caught.length>0;
+  if(cw)G.p.forEach((p,i)=>{if(!G.impIdx.includes(i))G.sc[p]=(G.sc[p]||0)+10});else G.impIdx.forEach(i=>{G.sc[G.p[i]]=(G.sc[G.p[i]]||0)+15});
+  let h=`<div class="result-title">${cw?'🎉 CREW WINS!':'☠ IMPOSTER WINS!'}</div><div class="result-sub">${cw?'The Imposter was caught!':'The Imposter got away!'}</div>`;
+  h+=`<div class="result-reveal-box ${cw?'crew-wins':'imposter-wins'}"><div class="result-reveal-label">${impN.length>1?'The Imposters were':'The Imposter was'}</div><div class="result-reveal-name" style="color:var(--accent)">${impN.map(esc).join(', ')}</div><div class="result-reveal-word">The word was: <strong style="color:var(--safe)">${esc(G.word)}</strong></div><div class="result-hint-note">Imposter's hint: "${esc(G.hint)}"</div></div>`;
+  const sv=Object.entries(G.votes).sort((a,b)=>b[1]-a[1]);
   h+=`<div class="section-title" style="font-size:1rem">Votes</div><div class="scores-list">`;
-  sv.forEach(([n,c])=>{const isI=impNames.includes(n),idx=players.indexOf(n);
-    h+=`<div class="score-row${c===maxV&&c>0?' highlight':''}"><div style="background:${COLORS[(idx>=0?idx:0)%COLORS.length]}22;color:${COLORS[(idx>=0?idx:0)%COLORS.length]};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0">${n.charAt(0).toUpperCase()}</div><span class="score-name">${esc(n)} ${isI?'<span style="color:var(--accent);font-size:.7rem">☠</span>':''}</span><span class="vote-count-badge">${c}</span></div>`;
-  });h+=`</div>`;
-  const ss=players.map(p=>[p,scores[p]||0]).sort((a,b)=>b[1]-a[1]);
+  sv.forEach(([n,c])=>{const isI=impN.includes(n),idx=G.p.indexOf(n);h+=`<div class="score-row${c===mx&&c>0?' highlight':''}"><div style="background:${CLR[(idx>=0?idx:0)%CLR.length]}22;color:${CLR[(idx>=0?idx:0)%CLR.length]};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0">${n[0].toUpperCase()}</div><span class="score-name">${esc(n)} ${isI?'<span style="color:var(--accent);font-size:.7rem">☠</span>':''}</span><span class="vote-count-badge">${c}</span></div>`});h+=`</div>`;
+  const ss=G.p.map(p=>[p,G.sc[p]||0]).sort((a,b)=>b[1]-a[1]);
   h+=`<div class="section-title" style="font-size:1rem">Scoreboard</div><div class="scores-list">`;
-  ss.forEach(([n,pts],i)=>{const idx=players.indexOf(n);
-    h+=`<div class="score-row"><span class="score-pos">${i+1}</span><div style="background:${COLORS[(idx>=0?idx:0)%COLORS.length]}22;color:${COLORS[(idx>=0?idx:0)%COLORS.length]};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0">${n.charAt(0).toUpperCase()}</div><span class="score-name">${esc(n)}</span><span class="score-pts">${pts} pts</span></div>`;
-  });h+=`</div>`;return h}
+  ss.forEach(([n,pts],i)=>{const idx=G.p.indexOf(n);h+=`<div class="score-row"><span class="score-pos">${i+1}</span><div style="background:${CLR[(idx>=0?idx:0)%CLR.length]}22;color:${CLR[(idx>=0?idx:0)%CLR.length]};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0">${n[0].toUpperCase()}</div><span class="score-name">${esc(n)}</span><span class="score-pts">${pts} pts</span></div>`});h+=`</div>`;
+  document.getElementById('resContent').innerHTML=h}
 
-// ═══════════════════════════════════
-// LOCAL MODE
-// ═══════════════════════════════════
-let L={players:[],scores:{},cat:null,imposters:1,rounds:3,word:'',hintWord:'',impIdx:[],revIdx:0,flipped:false,clueRound:1,clueTurn:0,clues:[],voteIdx:0,votes:{},voteSel:null};
-
-function startLocalMode(){L.players=[];L.scores={};L.cat=null;L.imposters=1;L.rounds=3;document.getElementById('localImposterCount').textContent='1';document.getElementById('localRoundsVal').textContent='3';localRenderPlayers();renderCatGrid('localCatGrid',null,localSelectCat);localCheckReady();goTo('screenLocalSetup')}
-function localSelectCat(k){L.cat=k;renderCatGrid('localCatGrid',L.cat,localSelectCat);localCheckReady()}
-function localAddPlayer(){const inp=document.getElementById('localPlayerInput'),n=inp.value.trim();if(!n||L.players.length>=20||L.players.find(p=>p.toLowerCase()===n.toLowerCase())){inp.value='';return}L.players.push(n);if(!L.scores[n])L.scores[n]=0;inp.value='';localRenderPlayers();localCheckReady();inp.focus()}
-function localRemovePlayer(i){L.players.splice(i,1);localRenderPlayers();localCheckReady()}
-function localRenderPlayers(){renderPlayerList('localPlayerList',L.players,{removable:true,removeFunc:'localRemovePlayer'});document.getElementById('localPlayerCount').textContent=L.players.length<3?`${L.players.length} player${L.players.length!==1?'s':''} — need at least 3`:`${L.players.length} players ready`}
-function localCheckReady(){document.getElementById('localStartBtn').disabled=L.players.length<3||!L.cat}
-function localChangeImposters(d){const mx=Math.max(1,Math.floor(L.players.length/2)-1)||1;L.imposters=Math.max(1,Math.min(mx,L.imposters+d));document.getElementById('localImposterCount').textContent=L.imposters}
-function localChangeRounds(d){L.rounds=Math.max(1,Math.min(10,L.rounds+d));document.getElementById('localRoundsVal').textContent=L.rounds}
-
-function localStartGame(){if(L.players.length<3||!L.cat)return;const ws=CATEGORIES[L.cat].words;L.word=ws[Math.floor(Math.random()*ws.length)];L.hintWord=getHintWord(L.cat,L.word);const sh=[...Array(L.players.length).keys()].sort(()=>Math.random()-.5);const n=Math.min(L.imposters,Math.floor(L.players.length/2)-1)||1;L.impIdx=sh.slice(0,n);L.revIdx=0;localShowPass(0,'reveal')}
-
-function localShowPass(i,mode){const o=document.getElementById('passOverlay');document.getElementById('passText').textContent='Pass to '+L.players[i];document.getElementById('passSub').textContent=mode==='reveal'?'Make sure nobody else is looking!':'Time to vote!';document.getElementById('passBtn').onclick=()=>{o.classList.remove('active');if(mode==='reveal')localShowReveal(i);else localShowVoteFor()};o.classList.add('active');if(mode==='reveal')L.revIdx=i}
-
-function localShowReveal(i){
-  goTo('screenLocalReveal');document.getElementById('localRevealName').textContent=L.players[i];
-  const isI=L.impIdx.includes(i);
-  document.getElementById('localRevealBack').className='reveal-back '+(isI?'is-imposter':'is-safe');
-  const rl=document.getElementById('localRevealRole');rl.className='reveal-role '+(isI?'imposter':'safe');rl.textContent=isI?'☠ IMPOSTER':'✓ CREW';
-  const wd=document.getElementById('localRevealWord');wd.textContent=isI?'IMPOSTER':L.word;wd.style.color=isI?'var(--accent)':'var(--safe)';
-  // Hint box for imposter
-  const hintBox=document.getElementById('localRevealHintBox');
-  if(isI){hintBox.classList.remove('hidden');document.getElementById('localRevealHintWord').textContent=L.hintWord}
-  else{hintBox.classList.add('hidden')}
-  document.getElementById('localRevealHint').textContent=isI?'Use this hint to blend in!':'Remember your word!';
-  L.flipped=false;document.getElementById('localRevealCard').classList.remove('flipped');document.getElementById('localRevealNext').style.display='none'}
-function localFlipCard(){if(L.flipped)return;L.flipped=true;document.getElementById('localRevealCard').classList.add('flipped');setTimeout(()=>{document.getElementById('localRevealNext').style.display='block'},600)}
-function localNextReveal(){const n=L.revIdx+1;if(n<L.players.length)localShowPass(n,'reveal');else localStartClues()}
-
-function localStartClues(){L.clueRound=1;L.clueTurn=0;L.clues=[];goTo('screenLocalClues');localUpdateClueUI()}
-function localUpdateClueUI(){document.getElementById('localRoundIndicator').innerHTML=`Round <span>${L.clueRound}</span> of <span>${L.rounds}</span>`;document.getElementById('localTurnName').textContent=L.players[L.clueTurn]+"'s turn";renderClueLog('localClueLog',L.clues,L.players)}
-function localClueNext(){L.clues.push({player:L.players[L.clueTurn],word:'(spoken)',round:L.clueRound});L.clueTurn++;if(L.clueTurn>=L.players.length){L.clueTurn=0;L.clueRound++;if(L.clueRound>L.rounds){localStartVoting();return}}localUpdateClueUI()}
-function localSkipToVote(){localStartVoting()}
-
-function localStartVoting(){goTo('screenLocalVote');L.votes={};L.players.forEach(p=>L.votes[p]=0);L.voteIdx=0;L.voteSel=null;renderClueLog('localVoteClueLog',L.clues.filter(c=>c.word!=='(spoken)'),L.players);localShowVoteFor()}
-function localShowVoteFor(){if(L.voteIdx>=L.players.length){localShowResults();return}document.getElementById('localVotePlayerName').textContent=L.players[L.voteIdx]+"'s Vote";L.voteSel=null;document.getElementById('localVoteCastBtn').disabled=true;const opts=document.getElementById('localVoteOptions');opts.innerHTML='';L.players.forEach((name,i)=>{if(i===L.voteIdx)return;const d=document.createElement('div');d.className='vote-card';d.innerHTML=`<div class="vote-avatar" style="background:${COLORS[i%COLORS.length]}22;color:${COLORS[i%COLORS.length]}">${name.charAt(0).toUpperCase()}</div><div class="vote-name">${esc(name)}</div><div class="vote-check">✓</div>`;d.onclick=()=>{document.querySelectorAll('#localVoteOptions .vote-card').forEach(c=>c.classList.remove('voted'));d.classList.add('voted');L.voteSel=i;document.getElementById('localVoteCastBtn').disabled=false};opts.appendChild(d)})}
-function localCastVote(){if(L.voteSel===null)return;L.votes[L.players[L.voteSel]]++;L.voteIdx++;if(L.voteIdx<L.players.length)localShowPass(L.voteIdx,'vote');else localShowResults()}
-function localSkipVote(){L.voteIdx++;if(L.voteIdx<L.players.length)localShowPass(L.voteIdx,'vote');else localShowResults()}
-function localShowResults(){goTo('screenLocalResults');let maxV=0,vo=[];for(const[n,c]of Object.entries(L.votes)){if(c>maxV){maxV=c;vo=[n]}else if(c===maxV&&c>0)vo.push(n)}const impN=L.impIdx.map(i=>L.players[i]),caught=vo.filter(n=>impN.includes(n)),cw=caught.length>0;if(cw)L.players.forEach((p,i)=>{if(!L.impIdx.includes(i))L.scores[p]=(L.scores[p]||0)+10});else L.impIdx.forEach(i=>{L.scores[L.players[i]]=(L.scores[L.players[i]]||0)+15});document.getElementById('localResultsContent').innerHTML=buildResultsHTML(cw,impN,L.word,L.hintWord,L.votes,maxV,L.players,L.scores,L.clues.filter(c=>c.word!=='(spoken)'))}
-function localPlayAgain(){localStartGame()}
-
-// ═══════════════════════════════════
-// ONLINE MODE
-// ═══════════════════════════════════
-let O={roomCode:null,myName:null,isHost:false,pollId:null,cat:null,imposters:1,rounds:3,flipped:false,voteSel:null,voted:false,lastPhase:null,readySent:false,resultsShown:false,lastRound:0,lastClueCount:0,submittedClue:false};
-const POLL_MS=1200;
-
-// ── FIREBASE CONFIG ──
-const firebaseConfig = {
-  apiKey: "AIzaSyDUW7s0nVpnuvvadOxl1ZAHfKDtLeWz-Gw",
-  authDomain: "imposter-game-b6fa1.firebaseapp.com",
-  databaseURL: "https://imposter-game-b6fa1-default-rtdb.firebaseio.com",
-  projectId: "imposter-game-b6fa1",
-  storageBucket: "imposter-game-b6fa1.firebasestorage.app",
-  messagingSenderId: "217306275936",
-  appId: "1:217306275936:web:589d2b90ff21cd4444e305"
-};
-
-let db = null;
-let roomRef = null;
-let roomListener = null;
-
-function initFirebase() {
-  if (db) return;
-  try {
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.database();
-  } catch(e) {
-    if (e.code !== 'app/duplicate-app') console.error(e);
-    db = firebase.database();
-  }
-}
-
-async function sGet(k) {
-  initFirebase();
-  try {
-    const snap = await db.ref('rooms/' + k).once('value');
-    return snap.val();
-  } catch(e) { console.error('sGet error:', e); return null; }
-}
-
-async function sSet(k, v) {
-  initFirebase();
-  try {
-    await db.ref('rooms/' + k).set(v);
-    return true;
-  } catch(e) { console.error('sSet error:', e); return false; }
-}
-
-async function sDel(k) {
-  initFirebase();
-  try { await db.ref('rooms/' + k).remove(); } catch(e) {}
-}
-
-// Real-time listener — replaces polling for much faster sync
-function startListening(code, callback) {
-  stopListening();
-  initFirebase();
-  roomRef = db.ref('rooms/' + code);
-  roomListener = roomRef.on('value', (snap) => {
-    const room = snap.val();
-    if (room) callback(room);
-    else { showToast('Room closed'); stopListening(); onlineGlow(false); goTo('screenHome'); }
-  }, (err) => { console.error('Listener error:', err); });
-}
-
-function stopListening() {
-  if (roomRef && roomListener) { roomRef.off('value', roomListener); }
-  roomRef = null; roomListener = null;
-  // Also stop legacy polling if active
-  if (O.pollId) { clearInterval(O.pollId); O.pollId = null; }
-}
-
-function onlineGlow(on){document.getElementById('bgGlow').classList.toggle('online-mode',on)}
-
-async function onlineCreateRoom(){const name=document.getElementById('onlineName').value.trim();if(!name){showToast('Enter your name');return}O.myName=name;O.isHost=true;O.cat=null;O.imposters=1;O.rounds=3;O.roomCode=genCode();
-  const room={code:O.roomCode,host:name,players:[name],scores:{[name]:0},phase:'lobby',cat:null,imposters:1,rounds:3,word:null,hintWord:null,imposterIndices:[],assignments:{},ready:{},votes:{},clues:[],clueTurnIdx:0,clueRound:1,round:1,scored:false};
-  if(!await sSet(O.roomCode,room)){showToast('Failed');return}onlineGlow(true);onlineOpenLobby()}
-
-async function onlineJoinRoom(){const name=document.getElementById('onlineName').value.trim(),code=document.getElementById('onlineRoomCode').value.trim().toUpperCase();if(!name){showToast('Enter your name');return}if(code.length!==4){showToast('Enter 4-letter code');return}O.myName=name;O.roomCode=code;O.isHost=false;
-  const room=await sGet(code);if(!room){showToast('Room not found');return}if(room.phase!=='lobby'){showToast('Game in progress');return}if(room.players.includes(name)){showToast('Name taken');return}if(room.players.length>=20){showToast('Room full');return}
-  room.players.push(name);if(!room.scores[name])room.scores[name]=0;await sSet(code,room);onlineGlow(true);onlineOpenLobby()}
-
-function onlineOpenLobby(){document.getElementById('lobbyCodeText').textContent=O.roomCode;O.lastPhase=null;O.lastRound=0;goTo('screenOnlineLobby');startPolling()}
-function onlineCheckReady(){document.getElementById('onlineStartBtn').disabled=!O.cat}
-function onlineChangeImposters(d){O.imposters=Math.max(1,Math.min(3,O.imposters+d));document.getElementById('onlineImposterCount').textContent=O.imposters}
-function onlineChangeRounds(d){O.rounds=Math.max(1,Math.min(10,O.rounds+d));document.getElementById('onlineRoundsVal').textContent=O.rounds}
-function onlineSelectCat(k){O.cat=k;renderCatGrid('lobbyCatGrid',O.cat,onlineSelectCat);onlineCheckReady()}
-function copyRoomCode(){if(navigator.clipboard)navigator.clipboard.writeText(O.roomCode).then(()=>showToast('Copied!')).catch(()=>{});else showToast(O.roomCode)}
-
-async function onlineStartGame(){if(!O.cat||!O.isHost)return;const room=await sGet(O.roomCode);if(!room||room.players.length<3){showToast('Need 3+ players');return}
-  const ws=CATEGORIES[O.cat].words;room.word=ws[Math.floor(Math.random()*ws.length)];room.hintWord=getHintWord(O.cat,room.word);
-  room.cat=O.cat;room.imposters=O.imposters;room.rounds=O.rounds;
-  const sh=[...Array(room.players.length).keys()].sort(()=>Math.random()-.5);const n=Math.min(O.imposters,Math.floor(room.players.length/2)-1)||1;room.imposterIndices=sh.slice(0,n);
-  room.assignments={};room.ready={};room.votes={};room.clues=[];room.clueTurnIdx=0;room.clueRound=1;room.scored=false;
-  room.players.forEach((p,i)=>{room.assignments[p]=room.imposterIndices.includes(i)?{role:'imposter',word:'IMPOSTER',hint:room.hintWord}:{role:'crew',word:room.word,hint:null}});
-  room.phase='reveal';await sSet(O.roomCode,room)}
-
-function onlineFlipCard(){if(O.flipped)return;O.flipped=true;document.getElementById('onlineRevealCard').classList.add('flipped');setTimeout(()=>{document.getElementById('onlineRevealReady').style.display='block'},600)}
-
-async function onlineMarkReady(){if(O.readySent)return;O.readySent=true;document.getElementById('onlineRevealReady').style.display='none';document.getElementById('onlineRevealWaiting').style.display='block';
-  const room=await sGet(O.roomCode);if(!room)return;room.ready[O.myName]=true;
-  if(O.isHost&&Object.keys(room.ready).length>=room.players.length)room.phase='clues';
-  await sSet(O.roomCode,room)}
-
-async function onlineSubmitClue(){const inp=document.getElementById('onlineClueInput'),word=inp.value.trim();if(!word)return;inp.value='';
-  const room=await sGet(O.roomCode);if(!room||room.players[room.clueTurnIdx]!==O.myName)return;
-  room.clues.push({player:O.myName,word:word,round:room.clueRound});room.clueTurnIdx++;
-  if(room.clueTurnIdx>=room.players.length){room.clueTurnIdx=0;room.clueRound++;if(room.clueRound>room.rounds){room.phase='vote';room.votes={}}}
-  O.submittedClue=true;await sSet(O.roomCode,room)}
-
-async function onlineCastVote(){if(O.voteSel===null||O.voted)return;O.voted=true;document.getElementById('onlineVoteCastBtn').disabled=true;document.getElementById('onlineVoteWaiting').style.display='block';document.querySelectorAll('#onlineVoteOptions .vote-card').forEach(c=>c.classList.add('disabled'));
-  const room=await sGet(O.roomCode);if(!room)return;room.votes[O.myName]=O.voteSel;
-  if(Object.keys(room.votes).length>=room.players.length)room.phase='results';
-  await sSet(O.roomCode,room)}
-
-async function onlinePlayAgain(){const room=await sGet(O.roomCode);if(!room||!O.isHost)return;room.phase='lobby';room.word=null;room.hintWord=null;room.assignments={};room.ready={};room.votes={};room.clues=[];room.imposterIndices=[];room.scored=false;room.clueTurnIdx=0;room.clueRound=1;room.round=(room.round||1)+1;await sSet(O.roomCode,room)}
-
-async function onlineLeaveRoom(){stopListening();if(O.roomCode){const room=await sGet(O.roomCode);if(room){room.players=room.players.filter(p=>p!==O.myName);if(room.players.length===0)await sDel(O.roomCode);else{if(room.host===O.myName)room.host=room.players[0];await sSet(O.roomCode,room)}}}O.roomCode=null;onlineGlow(false);goTo('screenHome')}
-
-function startPolling(){
-  // Use Firebase real-time listener instead of polling
-  if(!O.roomCode) return;
-  startListening(O.roomCode, (room) => { handleRoomUpdate(room); });
-}
-function stopPolling(){ stopListening(); }
-
-function handleRoomUpdate(room){if(!O.roomCode)return;
-  O.isHost=room.host===O.myName;
-  if(room.round!==O.lastRound){O.lastPhase=null;O.flipped=false;O.voteSel=null;O.voted=false;O.readySent=false;O.resultsShown=false;O.lastClueCount=0;O.submittedClue=false;O.lastRound=room.round}
-  if(room.phase==='lobby')pollLobby(room);
-  else if(room.phase==='reveal')pollReveal(room);
-  else if(room.phase==='clues')pollClues(room);
-  else if(room.phase==='vote')pollVote(room);
-  else if(room.phase==='results')pollResults(room);
-  O.lastPhase=room.phase}
-
-function pollLobby(room){if(O.lastPhase!=='lobby'){document.getElementById('lobbyHostControls').classList.toggle('hidden',!O.isHost);document.getElementById('lobbyGuestView').classList.toggle('hidden',O.isHost);if(O.isHost)renderCatGrid('lobbyCatGrid',O.cat,onlineSelectCat);goTo('screenOnlineLobby')}
-  renderPlayerList('lobbyPlayerList',room.players,{host:room.host,you:O.myName});document.getElementById('lobbyPlayerCount').textContent=room.players.length+' player'+(room.players.length!==1?'s':'');document.getElementById('lobbyStatusDot').className='status-dot connected';document.getElementById('lobbyStatusText').textContent=room.players.length+' connected';if(O.isHost)document.getElementById('onlineStartBtn').disabled=!O.cat||room.players.length<3}
-
-function pollReveal(room){
-  if(O.lastPhase!=='reveal'){O.flipped=false;O.readySent=false;goTo('screenOnlineReveal');document.getElementById('onlineRevealCard').classList.remove('flipped');document.getElementById('onlineRevealReady').style.display='none';document.getElementById('onlineRevealWaiting').style.display='none';
-    const a=room.assignments[O.myName];if(a){const isI=a.role==='imposter';
-      document.getElementById('onlineRevealBack').className='reveal-back '+(isI?'is-imposter':'is-safe');
-      const rl=document.getElementById('onlineRevealRole');rl.className='reveal-role '+(isI?'imposter':'safe');rl.textContent=isI?'☠ IMPOSTER':'✓ CREW';
-      const wd=document.getElementById('onlineRevealWord');wd.textContent=isI?'IMPOSTER':a.word;wd.style.color=isI?'var(--accent)':'var(--safe)';
-      const hintBox=document.getElementById('onlineRevealHintBox');
-      if(isI&&a.hint){hintBox.classList.remove('hidden');document.getElementById('onlineRevealHintWord').textContent=a.hint}else{hintBox.classList.add('hidden')}
-      document.getElementById('onlineRevealHint').textContent=isI?'Use this hint to blend in!':'Remember your word!'}}
-  if(O.readySent)document.getElementById('onlineRevealWaiting').textContent=Object.keys(room.ready||{}).length+'/'+room.players.length+' ready'}
-
-function pollClues(room){
-  if(O.lastPhase!=='clues'){O.submittedClue=false;O.lastClueCount=0;goTo('screenOnlineClues')}
-  document.getElementById('onlineRoundIndicator').innerHTML=`Round <span>${room.clueRound}</span> of <span>${room.rounds}</span>`;
-  if(room.clues.length!==O.lastClueCount){renderClueLog('onlineClueLog',room.clues,room.players);O.lastClueCount=room.clues.length;O.submittedClue=false}
-  const turnPlayer=room.players[room.clueTurnIdx];const isMyTurn=turnPlayer===O.myName;
-  const tb=document.getElementById('onlineTurnBanner');tb.className='turn-banner'+(isMyTurn?' your-turn':'');
-  document.getElementById('onlineTurnName').textContent=isMyTurn?'YOUR TURN':turnPlayer+"'s turn";
-  document.getElementById('onlineTurnSub').textContent=isMyTurn?'Type a one-word clue below!':'Waiting for their clue...';
-  document.getElementById('onlineClueInputArea').classList.toggle('hidden',!isMyTurn);
-  document.getElementById('onlineClueWaiting').style.display=isMyTurn?'none':'block';
-  document.getElementById('onlineClueWaiting').textContent=isMyTurn?'':`Waiting for ${turnPlayer}...`;
-  if(isMyTurn&&O.lastPhase==='clues')document.getElementById('onlineClueInput').focus()}
-
-function pollVote(room){if(O.lastPhase!=='vote'){O.voteSel=null;O.voted=false;goTo('screenOnlineVote');document.getElementById('onlineVoteCastBtn').disabled=true;document.getElementById('onlineVoteWaiting').style.display='none';
-  renderClueLog('onlineVoteClueLog',room.clues,room.players);
-  const opts=document.getElementById('onlineVoteOptions');opts.innerHTML='';
-  room.players.forEach((name,i)=>{if(name===O.myName)return;const d=document.createElement('div');d.className='vote-card';d.dataset.name=name;d.innerHTML=`<div class="vote-avatar" style="background:${COLORS[i%COLORS.length]}22;color:${COLORS[i%COLORS.length]}">${name.charAt(0).toUpperCase()}</div><div class="vote-name">${esc(name)}</div><div class="vote-check">✓</div>`;d.onclick=()=>{if(O.voted)return;document.querySelectorAll('#onlineVoteOptions .vote-card').forEach(c=>c.classList.remove('voted'));d.classList.add('voted');O.voteSel=name;document.getElementById('onlineVoteCastBtn').disabled=false};opts.appendChild(d)})}
-  if(O.voted)document.getElementById('onlineVoteWaiting').textContent=Object.keys(room.votes||{}).length+'/'+room.players.length+' voted'}
-
-function pollResults(room){if(!O.resultsShown){O.resultsShown=true;goTo('screenOnlineResults');
-  const tally={};room.players.forEach(p=>tally[p]=0);for(const v of Object.values(room.votes||{}))tally[v]=(tally[v]||0)+1;
-  let maxV=0,vo=[];for(const[n,c]of Object.entries(tally)){if(c>maxV){maxV=c;vo=[n]}else if(c===maxV&&c>0)vo.push(n)}
-  const impN=(room.imposterIndices||[]).map(i=>room.players[i]),caught=vo.filter(n=>impN.includes(n)),cw=caught.length>0;
-  if(O.isHost&&!room.scored){(async()=>{const rm=await sGet(O.roomCode);if(!rm||rm.scored)return;if(cw)rm.players.forEach((p,i)=>{if(!rm.imposterIndices.includes(i))rm.scores[p]=(rm.scores[p]||0)+10});else rm.imposterIndices.forEach(i=>{rm.scores[rm.players[i]]=(rm.scores[rm.players[i]]||0)+15});rm.scored=true;await sSet(O.roomCode,rm)})()}
-  document.getElementById('onlineResultsContent').innerHTML=buildResultsHTML(cw,impN,room.word,room.hintWord,tally,maxV,room.players,room.scores,room.clues);
-  document.getElementById('onlineResultsHostBtns').classList.toggle('hidden',!O.isHost);document.getElementById('onlineResultsGuestBtns').classList.toggle('hidden',O.isHost)}}
-
-renderCatGrid('localCatGrid',null,localSelectCat);
+renderCat();renderP();
 </script>
 
 
