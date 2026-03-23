@@ -185,9 +185,9 @@
     <div style="font-size:3rem;margin-bottom:16px">💌</div>
     <div style="font-size:1.1rem;font-weight:700;margin-bottom:8px">Get in Touch</div>
     <div class="text-dim" style="line-height:1.7;margin-bottom:32px">Got feedback, ideas, or found a bug? We'd love to hear from you!</div>
-    <a href="/cdn-cgi/l/email-protection#a9d3ccdbc6c5c0c4c0ddd1cedbc6dcd9e9cec4c8c0c587cac6c4" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:var(--accent);color:#fff;text-decoration:none;border-radius:var(--radius-sm);font-family:'Dela Gothic One',cursive;font-size:.9rem;letter-spacing:.5px;box-shadow:0 4px 24px var(--accent-glow);transition:all .2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>EMAIL US</a>
+    <a id="emailBtn" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:var(--accent);color:#fff;text-decoration:none;border-radius:var(--radius-sm);font-family:'Dela Gothic One',cursive;font-size:.9rem;letter-spacing:.5px;box-shadow:0 4px 24px var(--accent-glow);transition:all .2s;cursor:pointer" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>EMAIL US</a>
     <div style="margin-top:12px;font-size:.85rem;color:var(--text-dim)">or email us directly at</div>
-    <div style="margin-top:4px;font-size:.95rem;color:var(--text);font-weight:500;user-select:all;cursor:text" onclick="navigator.clipboard&&navigator.clipboard.writeText('zerolimitxgroup@gmail.com').then(()=>showToast('Email copied!'))"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2c56495e434045414558544b5e43595c6c4b414d4540024f4341">[email&#160;protected]</a></div>
+    <div id="emailText" style="margin-top:4px;font-size:.95rem;color:var(--text);font-weight:500;user-select:all;cursor:pointer"></div>
     <div class="gap-24"></div>
     <div style="padding:20px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);text-align:left">
       <div style="font-size:.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px">About</div>
@@ -285,7 +285,7 @@
 
 <div class="screen" id="screenOResults"><div id="oResContent"></div><div class="gap-16"></div><div id="oResHost" class="flex-row hidden"><button class="btn btn-online" onclick="oPlayAgain()">PLAY AGAIN</button><button class="btn btn-secondary" onclick="oLeave()">LEAVE</button></div><div id="oResGuest" class="hidden"><div class="waiting-text">Waiting for host...</div><div class="gap-12"></div><button class="btn btn-ghost" onclick="oLeave()">LEAVE ROOM</button></div></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ═══════════════════════
 // DATA
 // ═══════════════════════
@@ -457,4 +457,20 @@ function hResults(r){if(!O.resultsShown){O.resultsShown=true;goTo('screenOResult
   let mx=0,vo=[];for(const[n,c]of Object.entries(tally)){if(c>mx){mx=c;vo=[n]}else if(c===mx&&c>0)vo.push(n)}
   const impN=(r.impIdx||[]).map(i=>r.players[i]),caught=vo.filter(n=>impN.includes(n)),cw=caught.length>0;
   if(O.isHost&&!r.scored){(async()=>{const rm=await fbGet(O.code);if(!rm||rm.scored)return;if(cw)rm.players.forEach((p,i)=>{if(!rm.impIdx.includes(i))rm.scores[p]=(rm.scores[p]||0)+10});else rm.impIdx.forEach(i=>{rm.scores[rm.players[i]]=(rm.scores[rm.players[i]]||0)+15});rm.scored=true;await fbSet(O.code,rm)})()}
-  document.getElementById('oResContent').innerHTML=buildResults(cw,impN,r
+  document.getElementById('oResContent').innerHTML=buildResults(cw,impN,r.word,r.hint,tally,mx,r.players,r.scores,r.clues);
+  document.getElementById('oResHost').classList.toggle('hidden',!O.isHost);document.getElementById('oResGuest').classList.toggle('hidden',O.isHost)}}
+
+// ── EMAIL INIT (constructed to avoid Cloudflare email obfuscation) ──
+(function(){
+  const u='zerolimitx'+'group';const d='gm'+'ail.com';const e=u+'@'+d;
+  const btn=document.getElementById('emailBtn');
+  const txt=document.getElementById('emailText');
+  if(btn)btn.onclick=function(){window.location.href='mai'+'lto:'+e};
+  if(txt){txt.textContent=e;txt.onclick=function(){navigator.clipboard&&navigator.clipboard.writeText(e).then(()=>showToast('Email copied!'))}}
+})();
+
+// INIT
+renderCatGrid('catGrid',null,selCat);renderP();
+</script>
+</body>
+</html>
