@@ -402,8 +402,9 @@ async function oReady(){if(O.readySent)return;O.readySent=true;document.getEleme
 
 async function oSendClue(){const inp=document.getElementById('oClueInp'),word=inp.value.trim();if(!word)return;inp.value='';
   const room=await fbGet(O.code);if(!room||room.players[room.clueTurnIdx]!==O.me)return;
+  if(!room.clues)room.clues=[];
   room.clues.push({player:O.me,word:word,round:room.clueRound});room.clueTurnIdx++;
-  if(room.clueTurnIdx>=room.players.length){room.clueTurnIdx=0;room.clueRound++;if(room.clueRound>room.rnd){room.phase='vote';room.votes={}}}
+  if(room.clueTurnIdx>=room.players.length){room.clueTurnIdx=0;room.clueRound++;if(room.clueRound>room.rnd){room.phase='vote'}}
   await fbSet(O.code,room)}
 
 async function oCastVote(){if(O.voteSel===null||O.voted)return;O.voted=true;document.getElementById('oVoteBtn').disabled=true;document.getElementById('oVoteWait').style.display='block';document.querySelectorAll('#oVoteOpts .vote-card').forEach(c=>c.classList.add('disabled'));
@@ -446,7 +447,7 @@ function hClues(r){if(O.lastPhase!=='clues'){O.lastClueCount=0;goTo('screenOClue
   document.getElementById('oClueWait').textContent=mine?'':`Waiting for ${tp}...`}
 
 function hVote(r){if(O.lastPhase!=='vote'){O.voteSel=null;O.voted=false;goTo('screenOVote');document.getElementById('oVoteBtn').disabled=true;document.getElementById('oVoteWait').style.display='none';
-  renderLog('oVoteClueLog',r.clues,r.players);
+  renderLog('oVoteClueLog',r.clues||[],r.players);
   const opts=document.getElementById('oVoteOpts');opts.innerHTML='';
   r.players.forEach((name,i)=>{if(name===O.me)return;const d=document.createElement('div');d.className='vote-card';d.innerHTML=`<div class="player-avatar" style="background:${CLR[i%CLR.length]}22;color:${CLR[i%CLR.length]}">${name[0].toUpperCase()}</div><div class="player-name" style="flex:1;font-weight:500">${esc(name)}</div><div class="vote-check">✓</div>`;d.onclick=()=>{if(O.voted)return;document.querySelectorAll('#oVoteOpts .vote-card').forEach(c=>c.classList.remove('voted'));d.classList.add('voted');O.voteSel=name;document.getElementById('oVoteBtn').disabled=false};opts.appendChild(d)})}
   if(O.voted)document.getElementById('oVoteWait').textContent=Object.keys(r.votes||{}).length+'/'+r.players.length+' voted';
@@ -457,7 +458,7 @@ function hResults(r){if(!O.resultsShown){O.resultsShown=true;goTo('screenOResult
   let mx=0,vo=[];for(const[n,c]of Object.entries(tally)){if(c>mx){mx=c;vo=[n]}else if(c===mx&&c>0)vo.push(n)}
   const impN=(r.impIdx||[]).map(i=>r.players[i]),caught=vo.filter(n=>impN.includes(n)),cw=caught.length>0;
   if(O.isHost&&!r.scored){(async()=>{const rm=await fbGet(O.code);if(!rm||rm.scored)return;if(cw)rm.players.forEach((p,i)=>{if(!rm.impIdx.includes(i))rm.scores[p]=(rm.scores[p]||0)+10});else rm.impIdx.forEach(i=>{rm.scores[rm.players[i]]=(rm.scores[rm.players[i]]||0)+15});rm.scored=true;await fbSet(O.code,rm)})()}
-  document.getElementById('oResContent').innerHTML=buildResults(cw,impN,r.word,r.hint,tally,mx,r.players,r.scores,r.clues);
+  document.getElementById('oResContent').innerHTML=buildResults(cw,impN,r.word,r.hint,tally,mx,r.players,r.scores,r.clues||[]);
   document.getElementById('oResHost').classList.toggle('hidden',!O.isHost);document.getElementById('oResGuest').classList.toggle('hidden',O.isHost)}}
 
 // ── EMAIL INIT (constructed to avoid Cloudflare email obfuscation) ──
