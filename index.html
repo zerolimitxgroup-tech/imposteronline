@@ -175,7 +175,7 @@
   <div class="menu-item" onclick="menuGo('screenHow')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 9a3 3 0 115.12 2.13c-.58.49-1.12.9-1.12 1.87"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg>How to Play</div>
   <div class="menu-divider"></div>
   <div class="menu-item" onclick="menuGo('screenContact')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Contact</div>
-  <div class="menu-version">v1.1</div>
+  <div class="menu-version">v1.1.1</div>
 </div>
 
 <!-- CONTACT -->
@@ -193,7 +193,7 @@
       <div style="font-size:.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px">About</div>
       <div style="color:var(--text-dim);font-size:.9rem;line-height:1.6">IMPOSTER is a party game where one player gets a different word and must bluff their way through. Play locally or online with friends!</div>
       <div class="menu-divider" style="margin:16px 0"></div>
-      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:.75rem;color:var(--text-dim)">Version</span><span style="font-family:'Dela Gothic One',cursive;font-size:.85rem;color:var(--accent)">1.1</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:.75rem;color:var(--text-dim)">Version</span><span style="font-family:'Dela Gothic One',cursive;font-size:.85rem;color:var(--accent)">1.1.1</span></div>
     </div>
   </div>
   <div class="gap-24"></div><button class="btn btn-ghost" onclick="goTo('screenHome')">← BACK</button>
@@ -389,7 +389,9 @@ function oCopy(){if(navigator.clipboard)navigator.clipboard.writeText(O.code).th
 async function oStartGame(){if(!O.cat||!O.isHost)return;const room=await fbGet(O.code);if(!room||room.players.length<3){showToast('Need 3+ players');return}
   const ws=C[O.cat].words;room.word=ws[Math.floor(Math.random()*ws.length)];room.hint=getHint(O.cat,room.word);
   room.cat=O.cat;room.imp=O.imp;room.rnd=O.rnd;
-  const sh=[...Array(room.players.length).keys()].sort(()=>Math.random()-.5);const n=Math.min(O.imp,Math.floor(room.players.length/2)-1)||1;room.impIdx=sh.slice(0,n);
+  // Fisher-Yates shuffle for unbiased randomness
+  const sh=[...Array(room.players.length).keys()];for(let i=sh.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sh[i],sh[j]]=[sh[j],sh[i]]}
+  const n=Math.min(O.imp,Math.floor(room.players.length/2)-1)||1;room.impIdx=sh.slice(0,n);
   room.assignments={};room.ready={};room.votes={};room.clues=[];room.clueTurnIdx=0;room.clueRound=1;room.scored=false;
   room.players.forEach((p,i)=>{room.assignments[p]=room.impIdx.includes(i)?{role:'imposter',word:'IMPOSTER',hint:room.hint}:{role:'crew',word:room.word,hint:null}});
   room.phase='reveal';await fbSet(O.code,room)}
@@ -433,7 +435,7 @@ function hLobby(r){if(O.lastPhase!=='lobby'){document.getElementById('lobbyHost'
 function hReveal(r){if(O.lastPhase!=='reveal'){O.flipped=false;O.readySent=false;goTo('screenOReveal');document.getElementById('oRevCard').classList.remove('flipped');document.getElementById('oReadyBtn').style.display='none';document.getElementById('oRevWait').style.display='none';
   const a=r.assignments[O.me];if(a){const isI=a.role==='imposter';document.getElementById('oRevBack').className='reveal-back '+(isI?'is-imposter':'is-safe');const rl=document.getElementById('oRevRole');rl.className='reveal-role '+(isI?'imposter':'safe');rl.textContent=isI?'☠ IMPOSTER':'✓ CREW';const wd=document.getElementById('oRevWord');wd.textContent=isI?'IMPOSTER':a.word;wd.style.color=isI?'var(--accent)':'var(--safe)';const hb=document.getElementById('oRevHintBox');if(isI&&a.hint){hb.classList.remove('hidden');document.getElementById('oRevHintWord').textContent=a.hint}else hb.classList.add('hidden');document.getElementById('oRevHint').textContent=isI?'Use this hint to blend in!':'Remember your word!'}}
   if(O.readySent)document.getElementById('oRevWait').textContent=Object.keys(r.ready||{}).length+'/'+r.players.length+' ready';
-  if(O.isHost&&Object.keys(r.ready||{}).length>=r.players.length){db.ref('rooms/'+O.code+'/phase').set('clues')}}
+  if(Object.keys(r.ready||{}).length>=r.players.length){initFB();db.ref('rooms/'+O.code+'/phase').set('clues')}}
 
 function hClues(r){if(O.lastPhase!=='clues'){O.lastClueCount=0;goTo('screenOClues')}
   document.getElementById('oRndInd').innerHTML=`Round <span>${r.clueRound}</span> of <span>${r.rnd}</span>`;
@@ -451,14 +453,19 @@ function hVote(r){if(O.lastPhase!=='vote'){O.voteSel=null;O.voted=false;goTo('sc
   const opts=document.getElementById('oVoteOpts');opts.innerHTML='';
   r.players.forEach((name,i)=>{if(name===O.me)return;const d=document.createElement('div');d.className='vote-card';d.innerHTML=`<div class="player-avatar" style="background:${CLR[i%CLR.length]}22;color:${CLR[i%CLR.length]}">${name[0].toUpperCase()}</div><div class="player-name" style="flex:1;font-weight:500">${esc(name)}</div><div class="vote-check">✓</div>`;d.onclick=()=>{if(O.voted)return;document.querySelectorAll('#oVoteOpts .vote-card').forEach(c=>c.classList.remove('voted'));d.classList.add('voted');O.voteSel=name;document.getElementById('oVoteBtn').disabled=false};opts.appendChild(d)})}
   if(O.voted)document.getElementById('oVoteWait').textContent=Object.keys(r.votes||{}).length+'/'+r.players.length+' voted';
-  if(O.isHost&&Object.keys(r.votes||{}).length>=r.players.length){db.ref('rooms/'+O.code+'/phase').set('results')}}
+  if(Object.keys(r.votes||{}).length>=r.players.length){initFB();db.ref('rooms/'+O.code+'/phase').set('results')}}
 
 function hResults(r){if(!O.resultsShown){O.resultsShown=true;goTo('screenOResults');
   const tally={};r.players.forEach(p=>tally[p]=0);for(const v of Object.values(r.votes||{}))tally[v]=(tally[v]||0)+1;
   let mx=0,vo=[];for(const[n,c]of Object.entries(tally)){if(c>mx){mx=c;vo=[n]}else if(c===mx&&c>0)vo.push(n)}
   const impN=(r.impIdx||[]).map(i=>r.players[i]),caught=vo.filter(n=>impN.includes(n)),cw=caught.length>0;
-  if(O.isHost&&!r.scored){(async()=>{const rm=await fbGet(O.code);if(!rm||rm.scored)return;if(cw)rm.players.forEach((p,i)=>{if(!rm.impIdx.includes(i))rm.scores[p]=(rm.scores[p]||0)+10});else rm.impIdx.forEach(i=>{rm.scores[rm.players[i]]=(rm.scores[rm.players[i]]||0)+15});rm.scored=true;await fbSet(O.code,rm)})()}
-  document.getElementById('oResContent').innerHTML=buildResults(cw,impN,r.word,r.hint,tally,mx,r.players,r.scores,r.clues||[]);
+  // Apply scores locally for display
+  const displayScores=Object.assign({},r.scores||{});
+  if(cw)r.players.forEach((p,i)=>{if(!(r.impIdx||[]).includes(i))displayScores[p]=(displayScores[p]||0)+10});
+  else (r.impIdx||[]).forEach(i=>{displayScores[r.players[i]]=(displayScores[r.players[i]]||0)+15});
+  // Host writes scores atomically
+  if(O.isHost&&!r.scored){initFB();const updates={};updates['rooms/'+O.code+'/scored']=true;r.players.forEach(p=>{updates['rooms/'+O.code+'/scores/'+p]=displayScores[p]||0});db.ref().update(updates)}
+  document.getElementById('oResContent').innerHTML=buildResults(cw,impN,r.word,r.hint,tally,mx,r.players,displayScores,r.clues||[]);
   document.getElementById('oResHost').classList.toggle('hidden',!O.isHost);document.getElementById('oResGuest').classList.toggle('hidden',O.isHost)}}
 
 // ── EMAIL INIT (constructed to avoid Cloudflare email obfuscation) ──
