@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0053)file:///C:/Users/User/Downloads/imposter-local_2.html -->
+<!-- saved from url=(0053)file:///C:/Users/User/Downloads/imposter-local_4.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -122,6 +122,23 @@
   .mb-8{margin-bottom:8px}.mb-16{margin-bottom:16px}
   .flex-row{display:flex;gap:10px;width:100%}.flex-row>*{flex:1}
   .hidden{display:none!important}
+  /* ── BURGER MENU ── */
+  .burger-btn{position:fixed;top:16px;right:16px;z-index:90;width:44px;height:44px;border-radius:50%;background:var(--surface);border:1.5px solid var(--border);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:all .2s;-webkit-tap-highlight-color:transparent}
+  .burger-btn:hover{border-color:var(--accent);background:var(--accent-soft)}
+  .burger-btn span{display:block;width:18px;height:2px;background:var(--text);border-radius:2px;transition:all .3s}
+  .burger-btn.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+  .burger-btn.open span:nth-child(2){opacity:0}
+  .burger-btn.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+  .menu-overlay{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .25s}
+  .menu-overlay.open{opacity:1;pointer-events:auto}
+  .menu-panel{position:fixed;top:0;right:-280px;z-index:85;width:280px;height:100%;background:var(--surface);border-left:1px solid var(--border);padding:80px 24px 32px;transition:right .3s cubic-bezier(.4,0,.2,1);overflow-y:auto;display:flex;flex-direction:column}
+  .menu-panel.open{right:0}
+  .menu-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--radius-sm);cursor:pointer;transition:all .15s;color:var(--text);font-weight:500;font-size:.95rem;text-decoration:none;border:none;background:none;width:100%;text-align:left;font-family:inherit}
+  .menu-item:hover{background:var(--accent-soft);color:var(--accent)}
+  .menu-item svg{width:20px;height:20px;flex-shrink:0;opacity:.6}
+  .menu-item:hover svg{opacity:1}
+  .menu-divider{height:1px;background:var(--border);margin:12px 0}
+  .menu-version{margin-top:auto;padding:16px;text-align:center;font-size:.7rem;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;font-family:'Dela Gothic One',cursive}
   ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 </style>
 </head>
@@ -129,6 +146,46 @@
 <div class="bg-grid"></div>
 <div class="bg-glow"></div>
 <div class="toast" id="toast"></div>
+
+<!-- ═══════ BURGER MENU ═══════ -->
+<button class="burger-btn" id="burgerBtn" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+<div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+<div class="menu-panel" id="menuPanel">
+  <div class="menu-item" onclick="menuGo(&#39;screenHome&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"></path><path d="M5 10v10a1 1 0 001 1h3a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1h3a1 1 0 001-1V10"></path></svg>Home</div>
+  <div class="menu-item" onclick="menuGo(&#39;screenHow&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9 9a3 3 0 115.12 2.13c-.58.49-1.12.9-1.12 1.87"></path><circle cx="12" cy="17" r=".5" fill="currentColor"></circle></svg>How to Play</div>
+  <div class="menu-divider"></div>
+  <div class="menu-item" onclick="menuGo(&#39;screenContact&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>Contact</div>
+  <div class="menu-version">v1.0</div>
+</div>
+
+<!-- ═══════ CONTACT SCREEN ═══════ -->
+<div class="screen" id="screenContact">
+  <div class="logo logo-sm">CONTACT</div>
+  <div class="gap-24"></div>
+  <div style="width:100%;text-align:center;">
+    <div style="font-size:3rem;margin-bottom:16px">💌</div>
+    <div style="font-size:1.1rem;font-weight:700;margin-bottom:8px">Get in Touch</div>
+    <div class="text-dim" style="line-height:1.7;margin-bottom:32px">Got feedback, ideas, or found a bug? We'd love to hear from you!</div>
+    <a href="mailto:zerolimitxgroup@gmail.com" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:var(--accent);color:#fff;text-decoration:none;border-radius:var(--radius-sm);font-family:&#39;Dela Gothic One&#39;,cursive;font-size:.9rem;letter-spacing:.5px;box-shadow:0 4px 24px var(--accent-glow);transition:all .2s" onmouseover="this.style.transform=&#39;translateY(-2px)&#39;" onmouseout="this.style.transform=&#39;translateY(0)&#39;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+      EMAIL US
+    </a>
+    <div style="margin-top:12px;font-size:.85rem;color:var(--text-dim)">or email us directly at</div>
+    <div style="margin-top:4px;font-size:.95rem;color:var(--text);font-weight:500;user-select:all;cursor:text" onclick="navigator.clipboard&amp;&amp;navigator.clipboard.writeText(&#39;zerolimitxgroup@gmail.com&#39;).then(()=&gt;showToast(&#39;Email copied!&#39;))">zerolimitxgroup@gmail.com</div>
+    <div class="gap-24"></div>
+    <div style="padding:20px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);text-align:left">
+      <div style="font-size:.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px">About</div>
+      <div style="color:var(--text-dim);font-size:.9rem;line-height:1.6">IMPOSTER is a party game where one player gets a different word and must bluff their way through. Play locally with friends — pass the device around!</div>
+      <div class="menu-divider" style="margin:16px 0"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:.75rem;color:var(--text-dim)">Version</span>
+        <span style="font-family:&#39;Dela Gothic One&#39;,cursive;font-size:.85rem;color:var(--accent)">1.0</span>
+      </div>
+    </div>
+  </div>
+  <div class="gap-24"></div>
+  <button class="btn btn-ghost" onclick="goTo(&#39;screenHome&#39;)">← BACK</button>
+</div>
 
 <div class="screen active" id="screenHome">
   <div class="skull-icon"><svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="44" r="32" fill="#1c1c28" stroke="#ff3a5c" stroke-width="2.5"></circle><circle cx="38" cy="40" r="8" fill="#ff3a5c" opacity=".8"></circle><circle cx="62" cy="40" r="8" fill="#ff3a5c" opacity=".8"></circle><rect x="44" y="52" width="4" height="10" rx="2" fill="#ff3a5c" opacity=".5"></rect><rect x="52" y="52" width="4" height="10" rx="2" fill="#ff3a5c" opacity=".5"></rect><path d="M34 70 Q50 82 66 70" stroke="#ff3a5c" stroke-width="2" fill="none" opacity=".4"></path></svg></div>
@@ -262,6 +319,15 @@ function showResults(){goTo('screenResults');let mx=0,vo=[];for(const[n,c]of Obj
   document.getElementById('resContent').innerHTML=h}
 
 renderCat();renderP();
+
+// ── BURGER MENU ──
+function toggleMenu(){
+  const btn=document.getElementById('burgerBtn'),ov=document.getElementById('menuOverlay'),pn=document.getElementById('menuPanel');
+  const open=pn.classList.contains('open');
+  btn.classList.toggle('open',!open);ov.classList.toggle('open',!open);pn.classList.toggle('open',!open);
+  document.body.style.overflow=!open?'hidden':'';
+}
+function menuGo(id){toggleMenu();goTo(id)}
 </script>
 
 
