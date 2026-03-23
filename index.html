@@ -397,9 +397,8 @@ async function oStartGame(){if(!O.cat||!O.isHost)return;const room=await fbGet(O
 function oFlip(){if(O.flipped)return;O.flipped=true;document.getElementById('oRevCard').classList.add('flipped');setTimeout(()=>{document.getElementById('oReadyBtn').style.display='block'},600)}
 
 async function oReady(){if(O.readySent)return;O.readySent=true;document.getElementById('oReadyBtn').style.display='none';document.getElementById('oRevWait').style.display='block';
-  const room=await fbGet(O.code);if(!room)return;room.ready[O.me]=true;
-  if(O.isHost&&Object.keys(room.ready).length>=room.players.length)room.phase='clues';
-  await fbSet(O.code,room)}
+  initFB();
+  await db.ref('rooms/'+O.code+'/ready/'+O.me).set(true)}
 
 async function oSendClue(){const inp=document.getElementById('oClueInp'),word=inp.value.trim();if(!word)return;inp.value='';
   const room=await fbGet(O.code);if(!room||room.players[room.clueTurnIdx]!==O.me)return;
@@ -408,9 +407,8 @@ async function oSendClue(){const inp=document.getElementById('oClueInp'),word=in
   await fbSet(O.code,room)}
 
 async function oCastVote(){if(O.voteSel===null||O.voted)return;O.voted=true;document.getElementById('oVoteBtn').disabled=true;document.getElementById('oVoteWait').style.display='block';document.querySelectorAll('#oVoteOpts .vote-card').forEach(c=>c.classList.add('disabled'));
-  const room=await fbGet(O.code);if(!room)return;room.votes[O.me]=O.voteSel;
-  if(Object.keys(room.votes).length>=room.players.length)room.phase='results';
-  await fbSet(O.code,room)}
+  initFB();
+  await db.ref('rooms/'+O.code+'/votes/'+O.me).set(O.voteSel)}
 
 async function oPlayAgain(){const room=await fbGet(O.code);if(!room||!O.isHost)return;room.phase='lobby';room.word=null;room.hint=null;room.assignments={};room.ready={};room.votes={};room.clues=[];room.impIdx=[];room.scored=false;room.clueTurnIdx=0;room.clueRound=1;room.round=(room.round||1)+1;await fbSet(O.code,room)}
 
@@ -433,7 +431,8 @@ function hLobby(r){if(O.lastPhase!=='lobby'){document.getElementById('lobbyHost'
 
 function hReveal(r){if(O.lastPhase!=='reveal'){O.flipped=false;O.readySent=false;goTo('screenOReveal');document.getElementById('oRevCard').classList.remove('flipped');document.getElementById('oReadyBtn').style.display='none';document.getElementById('oRevWait').style.display='none';
   const a=r.assignments[O.me];if(a){const isI=a.role==='imposter';document.getElementById('oRevBack').className='reveal-back '+(isI?'is-imposter':'is-safe');const rl=document.getElementById('oRevRole');rl.className='reveal-role '+(isI?'imposter':'safe');rl.textContent=isI?'☠ IMPOSTER':'✓ CREW';const wd=document.getElementById('oRevWord');wd.textContent=isI?'IMPOSTER':a.word;wd.style.color=isI?'var(--accent)':'var(--safe)';const hb=document.getElementById('oRevHintBox');if(isI&&a.hint){hb.classList.remove('hidden');document.getElementById('oRevHintWord').textContent=a.hint}else hb.classList.add('hidden');document.getElementById('oRevHint').textContent=isI?'Use this hint to blend in!':'Remember your word!'}}
-  if(O.readySent)document.getElementById('oRevWait').textContent=Object.keys(r.ready||{}).length+'/'+r.players.length+' ready'}
+  if(O.readySent)document.getElementById('oRevWait').textContent=Object.keys(r.ready||{}).length+'/'+r.players.length+' ready';
+  if(O.isHost&&Object.keys(r.ready||{}).length>=r.players.length){db.ref('rooms/'+O.code+'/phase').set('clues')}}
 
 function hClues(r){if(O.lastPhase!=='clues'){O.lastClueCount=0;goTo('screenOClues')}
   document.getElementById('oRndInd').innerHTML=`Round <span>${r.clueRound}</span> of <span>${r.rnd}</span>`;
@@ -450,7 +449,8 @@ function hVote(r){if(O.lastPhase!=='vote'){O.voteSel=null;O.voted=false;goTo('sc
   renderLog('oVoteClueLog',r.clues,r.players);
   const opts=document.getElementById('oVoteOpts');opts.innerHTML='';
   r.players.forEach((name,i)=>{if(name===O.me)return;const d=document.createElement('div');d.className='vote-card';d.innerHTML=`<div class="player-avatar" style="background:${CLR[i%CLR.length]}22;color:${CLR[i%CLR.length]}">${name[0].toUpperCase()}</div><div class="player-name" style="flex:1;font-weight:500">${esc(name)}</div><div class="vote-check">✓</div>`;d.onclick=()=>{if(O.voted)return;document.querySelectorAll('#oVoteOpts .vote-card').forEach(c=>c.classList.remove('voted'));d.classList.add('voted');O.voteSel=name;document.getElementById('oVoteBtn').disabled=false};opts.appendChild(d)})}
-  if(O.voted)document.getElementById('oVoteWait').textContent=Object.keys(r.votes||{}).length+'/'+r.players.length+' voted'}
+  if(O.voted)document.getElementById('oVoteWait').textContent=Object.keys(r.votes||{}).length+'/'+r.players.length+' voted';
+  if(O.isHost&&Object.keys(r.votes||{}).length>=r.players.length){db.ref('rooms/'+O.code+'/phase').set('results')}}
 
 function hResults(r){if(!O.resultsShown){O.resultsShown=true;goTo('screenOResults');
   const tally={};r.players.forEach(p=>tally[p]=0);for(const v of Object.values(r.votes||{}))tally[v]=(tally[v]||0)+1;
