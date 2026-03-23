@@ -360,7 +360,7 @@ function showLocalResults(){goTo('screenResults');let mx=0,vo=[];for(const[n,c]o
 // ═══════════════════════
 // FIREBASE + ONLINE MODE
 // ═══════════════════════
-const fbConfig={apiKey:"AIzaSyDUW7s0nVpnuvvadOxl1ZAHfKDtLeWz-Gw",authDomain:"imposter-game-b6fa1.firebaseapp.com",databaseURL:"https://imposter-game-b6fa1-default-rtdb.firebaseio.com",projectId:"imposter-game-b6fa1",storageBucket:"imposter-game-b6fa1.firebasestorage.app",messagingSenderId:"217306275936",appId:"1:217306275936:web:589d2b90ff21cd4444e305"};
+const fbConfig={apiKey:"AIzaSyDUW7s0nVpnuvvadOxl1ZAHfKDtLeWz-Gw",authDomain:"imposter-game-b6fa1.firebaseapp.com",databaseURL:"https://imposter-game-b6fa1-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"imposter-game-b6fa1",storageBucket:"imposter-game-b6fa1.firebasestorage.app",messagingSenderId:"217306275936",appId:"1:217306275936:web:589d2b90ff21cd4444e305"};
 let db=null,roomRef=null,roomListen=null;
 function initFB(){if(db)return;try{firebase.initializeApp(fbConfig);db=firebase.database()}catch(e){db=firebase.database()}}
 async function fbGet(k){initFB();try{const s=await db.ref('rooms/'+k).once('value');return s.val()}catch(e){return null}}
