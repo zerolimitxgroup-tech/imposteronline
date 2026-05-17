@@ -175,7 +175,7 @@
   <div class="menu-item" onclick="menuGo('screenHow')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 9a3 3 0 115.12 2.13c-.58.49-1.12.9-1.12 1.87"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg>How to Play</div>
   <div class="menu-divider"></div>
   <div class="menu-item" onclick="menuGo('screenContact')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Contact</div>
-  <div class="menu-version">v1.1.1</div>
+  <div class="menu-version">v1.2</div>
 </div>
 
 <!-- CONTACT -->
@@ -193,7 +193,7 @@
       <div style="font-size:.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px">About</div>
       <div style="color:var(--text-dim);font-size:.9rem;line-height:1.6">IMPOSTER is a party game where one player gets a different word and must bluff their way through. Play locally or online with friends!</div>
       <div class="menu-divider" style="margin:16px 0"></div>
-      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:.75rem;color:var(--text-dim)">Version</span><span style="font-family:'Dela Gothic One',cursive;font-size:.85rem;color:var(--accent)">1.1.1</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:.75rem;color:var(--text-dim)">Version</span><span style="font-family:'Dela Gothic One',cursive;font-size:.85rem;color:var(--accent)">1.2</span></div>
     </div>
   </div>
   <div class="gap-24"></div><button class="btn btn-ghost" onclick="goTo('screenHome')">← BACK</button>
@@ -236,6 +236,7 @@
   <div style="width:100%">
     <div class="settings-row"><span class="settings-label">Imposters</span><div class="settings-value"><button class="stepper-btn" onclick="chgImp(-1)">−</button><span class="stepper-val" id="impVal">1</span><button class="stepper-btn" onclick="chgImp(1)">+</button></div></div>
     <div class="settings-row"><span class="settings-label">Clue Rounds</span><div class="settings-value"><button class="stepper-btn" onclick="chgRnd(-1)">−</button><span class="stepper-val" id="rndVal">3</span><button class="stepper-btn" onclick="chgRnd(1)">+</button></div></div>
+    <div class="settings-row"><span class="settings-label">Imposter Hints</span><div class="settings-value"><button id="hintToggle" onclick="toggleHints()" style="width:52px;height:30px;border-radius:15px;border:none;cursor:pointer;background:var(--safe);position:relative;transition:background .2s"><span style="position:absolute;top:3px;left:25px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)"></span></button></div></div>
   </div>
   <div class="gap-24"></div>
   <button class="btn btn-primary" id="startBtn" onclick="startGame()" disabled>START GAME</button>
@@ -270,6 +271,7 @@
     <div style="width:100%">
       <div class="settings-row"><span class="settings-label">Imposters</span><div class="settings-value"><button class="stepper-btn" onclick="oChgImp(-1)">−</button><span class="stepper-val" id="oImpVal">1</span><button class="stepper-btn" onclick="oChgImp(1)">+</button></div></div>
       <div class="settings-row"><span class="settings-label">Clue Rounds</span><div class="settings-value"><button class="stepper-btn" onclick="oChgRnd(-1)">−</button><span class="stepper-val" id="oRndVal">3</span><button class="stepper-btn" onclick="oChgRnd(1)">+</button></div></div>
+      <div class="settings-row"><span class="settings-label">Imposter Hints</span><div class="settings-value"><button id="oHintToggle" onclick="oToggleHints()" style="width:52px;height:30px;border-radius:15px;border:none;cursor:pointer;background:var(--safe);position:relative;transition:background .2s"><span style="position:absolute;top:3px;left:25px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)"></span></button></div></div>
     </div>
     <div class="gap-24"></div><button class="btn btn-online" id="oStartBtn" onclick="oStartGame()" disabled>START GAME</button>
   </div>
@@ -304,6 +306,20 @@ const C={
 };
 const CLR=['#ff3a5c','#00e676','#448aff','#ffc107','#e040fb','#ff6e40','#00bcd4','#69f0ae','#ffab40','#7c4dff','#f06292','#4dd0e1','#dce775','#ff8a65','#80deea','#a5d6a7','#ef5350','#42a5f5','#ab47bc','#26c6da'];
 
+// Patch orphan words into similarity groups
+(function(){const patches={
+  food:[['Paella','Risotto','Bibimbap','Poutine'],['Poutine','Chowder','Fondue','Nachos'],['Fondue','Chowder','Poutine']],
+  movies:[['Jurassic Park','Jaws','Alien','Inception'],['Spotlight','Parasite','Arrival','Forrest Gump'],['Parasite','Spotlight','Joker','Psycho']],
+  sports:[['Baseball','Cricket','Soccer','Basketball','Softball'],['Polo','Lacrosse','Hockey','Rugby'],['Javelin','Shot Put','Discus','Decathlon'],['Shot Put','Javelin','Discus','Weightlifting'],['Discus','Javelin','Shot Put','Decathlon'],['Weightlifting','Wrestling','Boxing','Gymnastics']],
+  countries:[['Ireland','Iceland','Denmark','Norway','Scotland'],['Denmark','Sweden','Finland','Norway'],['Mongolia','Nepal','Cambodia','Fiji']],
+  jobs:[['Architect','Carpenter','Electrician','Plumber'],['Accountant','Lawyer','Diplomat','Journalist'],['Janitor','Locksmith','Plumber','Electrician'],['Mayor','Diplomat','Judge','Lawyer'],['Diplomat','Mayor','Translator','Lawyer']],
+  places:[['Airport','Subway Station','Harbor','Parking Garage'],['Cinema','Arcade','Stadium','Museum'],['Laundromat','Junkyard','Parking Garage'],['School','Library','Courthouse','Prison'],['Prison','Police Station','Courthouse','School'],['Bank','Post Office','Courthouse','Pharmacy'],['Subway Station','Airport','Parking Garage'],['Parking Garage','Subway Station','Airport','Junkyard'],['Junkyard','Laundromat','Parking Garage'],['Rooftop','Observatory','Lighthouse','Treehouse']],
+  tech:[['Firewall','Server','Router','Modem'],['AI Assistant','Chatbot','Algorithm','Robot'],['Chatbot','AI Assistant','Algorithm'],['Algorithm','AI Assistant','Chatbot','Blockchain'],['Blockchain','Cryptocurrency','Algorithm'],['Cryptocurrency','Blockchain','QR Code'],['QR Code','Barcode','Scanner'],['Barcode','QR Code','Scanner'],['Thermostat','Solar Panel','Battery','Charger']],
+  music:[['Didgeridoo','Bagpipes','Ocarina','Tuba']],
+  clothing:[['Leggings','Cargo Pants','Jumpsuit','Overalls'],['Cargo Pants','Leggings','Overalls','Jumpsuit'],['Ski Mask','Goggles','Beanie','Mittens'],['Goggles','Ski Mask','Beanie','Mittens'],['Tutu','Toga','Kimono','Sarong']],
+  everyday:[['Umbrella','Raincoat','Backpack','Scarf'],['Hanger','Clothespin','Broom','Dustpan'],['Clothespin','Hanger','Bucket','Broom'],['Extension Cord','Battery','Charger','Light Bulb'],['Battery','Extension Cord','Flashlight','Remote Control'],['Ladder','Toolbox','Broom','Bucket'],['Magnifying Glass','Mirror','Sunglasses','Flashlight']]
+};for(const[k,gs]of Object.entries(patches)){if(C[k])C[k].groups.push(...gs)}})();
+
 // ═══════════════════════
 // SHARED HELPERS
 // ═══════════════════════
@@ -315,12 +331,15 @@ function getHint(ck,w){const c=C[ck];const mg=c.groups.filter(g=>g.includes(w));
 function renderCatGrid(id,sel,fn){const g=document.getElementById(id);g.innerHTML='';for(const[k,c]of Object.entries(C)){const d=document.createElement('div');d.className='cat-card'+(sel===k?' selected':'');d.innerHTML=`<div class="cat-icon">${c.icon}</div><div class="cat-name">${c.name}</div>`;d.onclick=()=>fn(k);g.appendChild(d)}}
 function renderPlayers(id,players,opts={}){const l=document.getElementById(id);l.innerHTML='';players.forEach((n,i)=>{const name=typeof n==='string'?n:n.name;const d=document.createElement('div');d.className='player-chip';let badges='';if(opts.host&&name===opts.host)badges+='<span class="player-badge badge-host">HOST</span> ';if(opts.you&&name===opts.you)badges+='<span class="player-badge badge-you">YOU</span>';let rm='';if(opts.removable)rm=`<button class="player-remove" onclick="${opts.removeFunc}(${i})">×</button>`;d.innerHTML=`<div class="player-avatar" style="background:${CLR[i%CLR.length]}22;color:${CLR[i%CLR.length]}">${name[0].toUpperCase()}</div><div class="player-name">${esc(name)} ${badges}</div>${rm}`;l.appendChild(d)})}
 function renderLog(id,clues,players){const l=document.getElementById(id);l.innerHTML='';(clues||[]).forEach(c=>{const i=(players||[]).indexOf(c.player);const d=document.createElement('div');d.className='clue-entry';d.innerHTML=`<span class="clue-round-badge">R${c.round}</span><div class="clue-avatar" style="background:${CLR[(i>=0?i:0)%CLR.length]}22;color:${CLR[(i>=0?i:0)%CLR.length]}">${c.player[0].toUpperCase()}</div><span class="clue-name">${esc(c.player)}</span><span class="clue-word">${esc(c.word)}</span>`;l.appendChild(d)});l.scrollTop=l.scrollHeight}
-function buildResults(cw,impN,word,hint,votes,mx,players,scores,clues){
+function buildResults(cw,impN,word,hint,votes,mx,players,scores,clues,voteMap){
   let h=`<div class="result-title">${cw?'🎉 CREW WINS!':'☠ IMPOSTER WINS!'}</div><div class="result-sub">${cw?'The Imposter was caught!':'The Imposter got away!'}</div>`;
   h+=`<div class="result-reveal-box ${cw?'crew-wins':'imposter-wins'}"><div class="result-reveal-label">${impN.length>1?'The Imposters were':'The Imposter was'}</div><div class="result-reveal-name" style="color:var(--accent)">${impN.map(esc).join(', ')}</div><div class="result-reveal-word">The word was: <strong style="color:var(--safe)">${esc(word||'')}</strong></div>${hint?`<div class="result-hint-note">Imposter's hint: "${esc(hint)}"</div>`:''}</div>`;
   if(clues&&clues.length>0){h+=`<div class="section-title" style="font-size:1rem">Clues Given</div><div class="scores-list">`;clues.forEach(c=>{const idx=players.indexOf(c.player);const isI=impN.includes(c.player);h+=`<div class="score-row"><span style="font-size:.6rem;color:var(--text-dim);min-width:20px">R${c.round}</span><div style="background:${CLR[(idx>=0?idx:0)%CLR.length]}22;color:${CLR[(idx>=0?idx:0)%CLR.length]};width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0">${c.player[0].toUpperCase()}</div><span class="score-name">${esc(c.player)}${isI?' <span style="color:var(--accent);font-size:.65rem">☠</span>':''}</span><span style="font-family:'Dela Gothic One',cursive;font-size:.9rem;color:var(--text)">${esc(c.word)}</span></div>`});h+=`</div>`}
+  // Who voted for who
+  if(voteMap&&Object.keys(voteMap).length>0){h+=`<div class="section-title" style="font-size:1rem">Who Voted Who</div><div class="scores-list">`;for(const[voter,target]of Object.entries(voteMap)){const vi=players.indexOf(voter),ti=players.indexOf(target);const isT=impN.includes(target);h+=`<div class="score-row"><div style="background:${CLR[(vi>=0?vi:0)%CLR.length]}22;color:${CLR[(vi>=0?vi:0)%CLR.length]};width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0">${voter[0].toUpperCase()}</div><span style="font-size:.85rem;color:var(--text-dim);flex:1">${esc(voter)}</span><span style="color:var(--text-dim);margin:0 8px">→</span><div style="background:${CLR[(ti>=0?ti:0)%CLR.length]}22;color:${CLR[(ti>=0?ti:0)%CLR.length]};width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0">${target[0].toUpperCase()}</div><span style="font-size:.85rem;font-weight:500">${esc(target)} ${isT?'<span style="color:var(--accent);font-size:.65rem">☠</span>':''}</span></div>`}h+=`</div>`}
+  // Vote totals
   const sv=Object.entries(votes).sort((a,b)=>b[1]-a[1]);
-  h+=`<div class="section-title" style="font-size:1rem">Votes</div><div class="scores-list">`;sv.forEach(([n,c])=>{const isI=impN.includes(n),idx=players.indexOf(n);h+=`<div class="score-row${c===mx&&c>0?' highlight':''}"><div style="background:${CLR[(idx>=0?idx:0)%CLR.length]}22;color:${CLR[(idx>=0?idx:0)%CLR.length]};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0">${n[0].toUpperCase()}</div><span class="score-name">${esc(n)} ${isI?'<span style="color:var(--accent);font-size:.7rem">☠</span>':''}</span><span class="vote-count-badge">${c}</span></div>`});h+=`</div>`;
+  h+=`<div class="section-title" style="font-size:1rem">Vote Totals</div><div class="scores-list">`;sv.forEach(([n,c])=>{const isI=impN.includes(n),idx=players.indexOf(n);h+=`<div class="score-row${c===mx&&c>0?' highlight':''}"><div style="background:${CLR[(idx>=0?idx:0)%CLR.length]}22;color:${CLR[(idx>=0?idx:0)%CLR.length]};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0">${n[0].toUpperCase()}</div><span class="score-name">${esc(n)} ${isI?'<span style="color:var(--accent);font-size:.7rem">☠</span>':''}</span><span class="vote-count-badge">${c}</span></div>`});h+=`</div>`;
   const ss=players.map(p=>[p,scores[p]||0]).sort((a,b)=>b[1]-a[1]);
   h+=`<div class="section-title" style="font-size:1rem">Scoreboard</div><div class="scores-list">`;ss.forEach(([n,pts],i)=>{const idx=players.indexOf(n);h+=`<div class="score-row"><span class="score-pos">${i+1}</span><div style="background:${CLR[(idx>=0?idx:0)%CLR.length]}22;color:${CLR[(idx>=0?idx:0)%CLR.length]};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0">${n[0].toUpperCase()}</div><span class="score-name">${esc(n)}</span><span class="score-pts">${pts} pts</span></div>`});h+=`</div>`;return h}
 
@@ -333,8 +352,9 @@ function menuGo(id){toggleMenu();if(id==='screenHome')oLeaveQuiet();goTo(id)}
 // ═══════════════════════
 // LOCAL MODE
 // ═══════════════════════
-let G={p:[],sc:{},cat:null,imp:1,rnd:3,word:'',hint:'',impIdx:[],revI:0,flip:false,cr:1,ct:0,clues:[],vi:0,votes:{},vs:null,order:[],voteOrder:[]};
+let G={p:[],sc:{},cat:null,imp:1,rnd:3,hints:true,word:'',hint:'',impIdx:[],revI:0,flip:false,cr:1,ct:0,clues:[],vi:0,votes:{},vs:null,order:[],voteOrder:[]};
 
+function toggleHints(){G.hints=!G.hints;const b=document.getElementById('hintToggle');b.style.background=G.hints?'var(--safe)':'var(--border)';b.querySelector('span').style.left=G.hints?'25px':'3px'}
 function addP(){const i=document.getElementById('inp'),n=i.value.trim();if(!n||G.p.length>=20||G.p.find(p=>p.toLowerCase()===n.toLowerCase())){i.value='';return}G.p.push(n);if(!G.sc[n])G.sc[n]=0;i.value='';renderP();chk();i.focus()}
 function remP(i){G.p.splice(i,1);renderP();chk()}
 function renderP(){renderPlayers('pList',G.p,{removable:true,removeFunc:'remP'});document.getElementById('pCount').textContent=G.p.length<3?`${G.p.length} player${G.p.length!==1?'s':''} — need at least 3`:`${G.p.length} players ready`}
@@ -343,9 +363,9 @@ function selCat(k){G.cat=k;renderCatGrid('catGrid',G.cat,selCat);chk()}
 function chgImp(d){const mx=Math.max(1,Math.floor(G.p.length/2)-1)||1;G.imp=Math.max(1,Math.min(mx,G.imp+d));document.getElementById('impVal').textContent=G.imp}
 function chgRnd(d){G.rnd=Math.max(1,Math.min(10,G.rnd+d));document.getElementById('rndVal').textContent=G.rnd}
 
-function startGame(){if(G.p.length<3||!G.cat)return;const ws=C[G.cat].words;G.word=ws[Math.floor(Math.random()*ws.length)];G.hint=getHint(G.cat,G.word);const sh=[...Array(G.p.length).keys()].sort(()=>Math.random()-.5);G.impIdx=sh.slice(0,Math.min(G.imp,Math.floor(G.p.length/2)-1)||1);G.order=[...Array(G.p.length).keys()].sort(()=>Math.random()-.5);G.revI=0;showPass(G.order[0],'reveal')}
+function startGame(){if(G.p.length<3||!G.cat)return;const ws=C[G.cat].words;G.word=ws[Math.floor(Math.random()*ws.length)];G.hint=G.hints?getHint(G.cat,G.word):null;const sh=[...Array(G.p.length).keys()];for(let i=sh.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sh[i],sh[j]]=[sh[j],sh[i]]}G.impIdx=sh.slice(0,Math.min(G.imp,Math.floor(G.p.length/2)-1)||1);G.order=[...Array(G.p.length).keys()];for(let i=G.order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[G.order[i],G.order[j]]=[G.order[j],G.order[i]]}G.revI=0;showPass(G.order[0],'reveal')}
 function showPass(i,mode){const o=document.getElementById('passOv');document.getElementById('passText').textContent='Pass to '+G.p[i];document.getElementById('passSub').textContent=mode==='reveal'?'Make sure nobody else is looking!':'Time to vote!';document.getElementById('passBtn').onclick=()=>{o.classList.remove('active');if(mode==='reveal')showReveal(i);else showVoteFor()};o.classList.add('active')}
-function showReveal(i){goTo('screenReveal');document.getElementById('revName').textContent=G.p[i];const isI=G.impIdx.includes(i);document.getElementById('revBack').className='reveal-back '+(isI?'is-imposter':'is-safe');const rl=document.getElementById('revRole');rl.className='reveal-role '+(isI?'imposter':'safe');rl.textContent=isI?'☠ IMPOSTER':'✓ CREW';const wd=document.getElementById('revWord');wd.textContent=isI?'IMPOSTER':G.word;wd.style.color=isI?'var(--accent)':'var(--safe)';const hb=document.getElementById('revHintBox');if(isI){hb.classList.remove('hidden');document.getElementById('revHintWord').textContent=G.hint}else hb.classList.add('hidden');document.getElementById('revHint').textContent=isI?'Use this hint to blend in!':'Remember your word!';G.flip=false;document.getElementById('revCard').classList.remove('flipped');document.getElementById('revNext').style.display='none'}
+function showReveal(i){goTo('screenReveal');document.getElementById('revName').textContent=G.p[i];const isI=G.impIdx.includes(i);document.getElementById('revBack').className='reveal-back '+(isI?'is-imposter':'is-safe');const rl=document.getElementById('revRole');rl.className='reveal-role '+(isI?'imposter':'safe');rl.textContent=isI?'☠ IMPOSTER':'✓ CREW';const wd=document.getElementById('revWord');wd.textContent=isI?'IMPOSTER':G.word;wd.style.color=isI?'var(--accent)':'var(--safe)';const hb=document.getElementById('revHintBox');if(isI&&G.hint){hb.classList.remove('hidden');document.getElementById('revHintWord').textContent=G.hint}else{hb.classList.add('hidden')}document.getElementById('revHint').textContent=isI?(G.hint?'Use this hint to blend in!':'Good luck blending in!'):'Remember your word!';G.flip=false;document.getElementById('revCard').classList.remove('flipped');document.getElementById('revNext').style.display='none'}
 function flipCard(){if(G.flip)return;G.flip=true;document.getElementById('revCard').classList.add('flipped');setTimeout(()=>{document.getElementById('revNext').style.display='block'},600)}
 function nextReveal(){G.revI++;if(G.revI<G.p.length)showPass(G.order[G.revI],'reveal');else startClues()}
 function startClues(){G.cr=1;G.ct=0;G.clues=[];goTo('screenClues');updClue()}
@@ -355,7 +375,7 @@ function goVote(){goTo('screenVote');G.votes={};G.p.forEach(p=>G.votes[p]=0);G.v
 function showVoteFor(){if(G.vi>=G.p.length){showLocalResults();return}const pi=G.voteOrder[G.vi];document.getElementById('vName').textContent=G.p[pi]+"'s Vote";G.vs=null;document.getElementById('vBtn').disabled=true;const o=document.getElementById('vOpts');o.innerHTML='';G.p.forEach((n,i)=>{if(i===pi)return;const d=document.createElement('div');d.className='vote-card';d.innerHTML=`<div class="player-avatar" style="background:${CLR[i%CLR.length]}22;color:${CLR[i%CLR.length]}">${n[0].toUpperCase()}</div><div class="player-name" style="flex:1;font-weight:500">${esc(n)}</div><div class="vote-check">✓</div>`;d.onclick=()=>{document.querySelectorAll('#vOpts .vote-card').forEach(c=>c.classList.remove('voted'));d.classList.add('voted');G.vs=i;document.getElementById('vBtn').disabled=false};o.appendChild(d)})}
 function castVote(){if(G.vs===null)return;G.votes[G.p[G.vs]]++;G.vi++;if(G.vi<G.p.length)showPass(G.voteOrder[G.vi],'vote');else showLocalResults()}
 function skipVote(){G.vi++;if(G.vi<G.p.length)showPass(G.voteOrder[G.vi],'vote');else showLocalResults()}
-function showLocalResults(){goTo('screenResults');let mx=0,vo=[];for(const[n,c]of Object.entries(G.votes)){if(c>mx){mx=c;vo=[n]}else if(c===mx&&c>0)vo.push(n)}const impN=G.impIdx.map(i=>G.p[i]),caught=vo.filter(n=>impN.includes(n)),cw=caught.length>0;if(cw)G.p.forEach((p,i)=>{if(!G.impIdx.includes(i))G.sc[p]=(G.sc[p]||0)+10});else G.impIdx.forEach(i=>{G.sc[G.p[i]]=(G.sc[G.p[i]]||0)+15});document.getElementById('resContent').innerHTML=buildResults(cw,impN,G.word,G.hint,G.votes,mx,G.p,G.sc,G.clues.filter(c=>c.word!=='(spoken)'))}
+function showLocalResults(){goTo('screenResults');let mx=0,vo=[];for(const[n,c]of Object.entries(G.votes)){if(c>mx){mx=c;vo=[n]}else if(c===mx&&c>0)vo.push(n)}const impN=G.impIdx.map(i=>G.p[i]);const majority=Math.floor(G.p.length/2)+1;const caught=vo.filter(n=>impN.includes(n));const cw=caught.length>0&&mx>=majority;if(cw)G.p.forEach((p,i)=>{if(!G.impIdx.includes(i))G.sc[p]=(G.sc[p]||0)+10});else G.impIdx.forEach(i=>{G.sc[G.p[i]]=(G.sc[G.p[i]]||0)+15});document.getElementById('resContent').innerHTML=buildResults(cw,impN,G.word,G.hint,G.votes,mx,G.p,G.sc,G.clues.filter(c=>c.word!=='(spoken)'),null)}
 
 // ═══════════════════════
 // FIREBASE + ONLINE MODE
@@ -369,8 +389,9 @@ async function fbDel(k){initFB();try{await db.ref('rooms/'+k).remove()}catch(e){
 function fbListen(code,cb){fbStop();initFB();roomRef=db.ref('rooms/'+code);roomListen=roomRef.on('value',s=>{const r=s.val();if(r)cb(r);else{showToast('Room closed');fbStop();setGlow(false);goTo('screenHome')}},e=>{console.error(e)})}
 function fbStop(){if(roomRef&&roomListen)roomRef.off('value',roomListen);roomRef=null;roomListen=null}
 
-let O={code:null,me:null,isHost:false,cat:null,imp:1,rnd:3,flipped:false,voteSel:null,voted:false,lastPhase:null,readySent:false,resultsShown:false,lastRound:0,lastClueCount:0};
+let O={code:null,me:null,isHost:false,cat:null,imp:1,rnd:3,hints:true,flipped:false,voteSel:null,voted:false,lastPhase:null,readySent:false,resultsShown:false,lastRound:0,lastClueCount:0};
 function setGlow(on){document.getElementById('bgGlow').classList.toggle('online-mode',on)}
+function oToggleHints(){O.hints=!O.hints;const b=document.getElementById('oHintToggle');b.style.background=O.hints?'var(--safe)':'var(--border)';b.querySelector('span').style.left=O.hints?'25px':'3px'}
 
 async function oCreate(){const name=document.getElementById('onlineName').value.trim();if(!name){showToast('Enter your name');return}O.me=name;O.isHost=true;O.cat=null;O.imp=1;O.rnd=3;O.code=genCode();
   const room={code:O.code,host:name,players:[name],scores:{[name]:0},phase:'lobby',cat:null,imp:1,rnd:3,word:null,hint:null,impIdx:[],assignments:{},ready:{},votes:{},clues:[],clueTurnIdx:0,clueRound:1,round:1,scored:false};
@@ -387,7 +408,7 @@ function oChgRnd(d){O.rnd=Math.max(1,Math.min(10,O.rnd+d));document.getElementBy
 function oCopy(){if(navigator.clipboard)navigator.clipboard.writeText(O.code).then(()=>showToast('Copied!')).catch(()=>{});else showToast(O.code)}
 
 async function oStartGame(){if(!O.cat||!O.isHost)return;const room=await fbGet(O.code);if(!room||room.players.length<3){showToast('Need 3+ players');return}
-  const ws=C[O.cat].words;room.word=ws[Math.floor(Math.random()*ws.length)];room.hint=getHint(O.cat,room.word);
+  const ws=C[O.cat].words;room.word=ws[Math.floor(Math.random()*ws.length)];room.hint=O.hints?getHint(O.cat,room.word):null;
   room.cat=O.cat;room.imp=O.imp;room.rnd=O.rnd;
   // Fisher-Yates shuffle for unbiased randomness
   const sh=[...Array(room.players.length).keys()];for(let i=sh.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sh[i],sh[j]]=[sh[j],sh[i]]}
@@ -456,16 +477,19 @@ function hVote(r){if(O.lastPhase!=='vote'){O.voteSel=null;O.voted=false;goTo('sc
   if(Object.keys(r.votes||{}).length>=r.players.length){initFB();db.ref('rooms/'+O.code+'/phase').set('results')}}
 
 function hResults(r){if(!O.resultsShown){O.resultsShown=true;goTo('screenOResults');
-  const tally={};r.players.forEach(p=>tally[p]=0);for(const v of Object.values(r.votes||{}))tally[v]=(tally[v]||0)+1;
+  const voteMap=r.votes||{};
+  const tally={};r.players.forEach(p=>tally[p]=0);for(const v of Object.values(voteMap))tally[v]=(tally[v]||0)+1;
   let mx=0,vo=[];for(const[n,c]of Object.entries(tally)){if(c>mx){mx=c;vo=[n]}else if(c===mx&&c>0)vo.push(n)}
-  const impN=(r.impIdx||[]).map(i=>r.players[i]),caught=vo.filter(n=>impN.includes(n)),cw=caught.length>0;
+  const impN=(r.impIdx||[]).map(i=>r.players[i]),caught=vo.filter(n=>impN.includes(n));
+  const majority=Math.floor(r.players.length/2)+1;
+  const cw=caught.length>0&&mx>=majority;
   // Apply scores locally for display
   const displayScores=Object.assign({},r.scores||{});
   if(cw)r.players.forEach((p,i)=>{if(!(r.impIdx||[]).includes(i))displayScores[p]=(displayScores[p]||0)+10});
   else (r.impIdx||[]).forEach(i=>{displayScores[r.players[i]]=(displayScores[r.players[i]]||0)+15});
-  // Host writes scores atomically
-  if(O.isHost&&!r.scored){initFB();const updates={};updates['rooms/'+O.code+'/scored']=true;r.players.forEach(p=>{updates['rooms/'+O.code+'/scores/'+p]=displayScores[p]||0});db.ref().update(updates)}
-  document.getElementById('oResContent').innerHTML=buildResults(cw,impN,r.word,r.hint,tally,mx,r.players,displayScores,r.clues||[]);
+  // Any player writes scores atomically (idempotent)
+  if(!r.scored){initFB();const updates={};updates['rooms/'+O.code+'/scored']=true;r.players.forEach(p=>{updates['rooms/'+O.code+'/scores/'+p]=displayScores[p]||0});db.ref().update(updates)}
+  document.getElementById('oResContent').innerHTML=buildResults(cw,impN,r.word,r.hint,tally,mx,r.players,displayScores,r.clues||[],voteMap);
   document.getElementById('oResHost').classList.toggle('hidden',!O.isHost);document.getElementById('oResGuest').classList.toggle('hidden',O.isHost)}}
 
 // ── EMAIL INIT (constructed to avoid Cloudflare email obfuscation) ──
