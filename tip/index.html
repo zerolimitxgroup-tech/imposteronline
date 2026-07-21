@@ -8,8 +8,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='6' y='22' width='88' height='56' rx='10' fill='%230d130f'/%3E%3Crect x='9' y='25' width='82' height='50' rx='8' fill='%23132318' stroke='%2385bb65' stroke-width='2.5'/%3E%3Ccircle cx='50' cy='50' r='16' fill='none' stroke='%2385bb65' stroke-width='2.5'/%3E%3Ctext x='50' y='59' font-size='22' fill='%23c9a94e' text-anchor='middle' font-family='Georgia,serif' font-weight='bold'%3E%24%3C/text%3E%3C/svg%3E">
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=DM+Sans:wght@400;500;600;700&display=swap');
   :root{
@@ -35,14 +33,12 @@
   @keyframes spin{to{transform:rotate(360deg)}}
   @keyframes flyIn{0%{opacity:0;transform:scale(.4) rotate(-25deg)}60%{opacity:1;transform:scale(1.12) rotate(6deg)}100%{transform:scale(1) rotate(0)}}
 
-  /* ---------- headings ---------- */
   .brand{text-align:center;margin:34px 0 6px}
   .bill-hero{width:132px;height:auto;margin:0 auto 18px;display:block;animation:floaty 5s ease-in-out infinite;filter:drop-shadow(0 12px 24px rgba(0,0,0,.5))}
   .brand h1{font-family:'Fraunces',serif;font-weight:800;font-size:clamp(2rem,8.5vw,2.8rem);line-height:1.02;letter-spacing:-.5px}
   .brand h1 .accent{color:var(--gold)}
   .brand p{color:var(--dim);font-size:.95rem;margin-top:12px;line-height:1.5}
 
-  /* ---------- form ---------- */
   .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
   .field{margin-bottom:16px}
   .field label{display:block;font-size:.72rem;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
@@ -63,16 +59,16 @@
   .btn-row{display:flex;gap:10px}.btn-row .btn{width:auto;flex:1}
   .btn-sm{padding:11px 14px;font-size:.9rem}
 
-  /* ---------- board header ---------- */
   .topbar{display:flex;align-items:center;justify-content:space-between;margin:4px 0 20px;gap:10px}
   .topbar .grp{min-width:0}
   .topbar .grp .k{font-size:.68rem;letter-spacing:1.6px;text-transform:uppercase;color:var(--dim2)}
-  .topbar .grp .v{font-family:'Fraunces',serif;font-weight:700;font-size:1.3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .topbar .grp .v{font-family:'Fraunces',serif;font-weight:700;font-size:1.3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:8px}
+  .live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green-glow);flex-shrink:0;transition:background .3s}
+  .live-dot.off{background:var(--dim2);box-shadow:none}
   .icon-btn{flex-shrink:0;width:44px;height:44px;border-radius:12px;background:var(--surface);border:1px solid var(--border);color:var(--text);
     font-size:1.15rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
   .icon-btn:active{background:var(--surface2)}
 
-  /* ---------- holder spotlight ---------- */
   .spotlight{position:relative;text-align:center;padding:30px 22px 26px;border-radius:var(--radius);overflow:hidden;
     background:linear-gradient(160deg,#16241a,#0f180f);border:1px solid var(--border);margin-bottom:16px}
   .spotlight::after{content:'';position:absolute;inset:0;background:linear-gradient(120deg,transparent 20%,rgba(133,187,101,.14) 50%,transparent 80%);
@@ -91,13 +87,11 @@
   .stat .n{font-family:'Fraunces',serif;font-weight:800;font-size:1.5rem}
   .stat .l{font-size:.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--dim2);margin-top:3px}
 
-  /* ---------- section ---------- */
   .sec{margin-bottom:22px}
   .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 2px}
   .sec-head h2{font-family:'Fraunces',serif;font-weight:700;font-size:1.15rem}
   .sec-head .link{background:none;border:none;color:var(--green);font-family:inherit;font-weight:600;font-size:.85rem;cursor:pointer;padding:4px}
 
-  /* ---------- leaderboard ---------- */
   .rank{display:flex;align-items:center;gap:13px;padding:13px 15px;background:var(--surface);border:1px solid var(--border);
     border-radius:var(--radius-sm);margin-bottom:9px;animation:pop .3s ease}
   .rank.is-holder{border-color:var(--green);background:linear-gradient(120deg,var(--green-soft),var(--surface))}
@@ -110,7 +104,6 @@
   .rank .cnt small{font-size:.62rem;color:var(--dim2);font-weight:600;letter-spacing:.5px;display:block;text-align:right;font-family:'DM Sans',sans-serif}
   .dollar-chip{flex-shrink:0;font-size:1.05rem;filter:drop-shadow(0 0 6px var(--green-glow))}
 
-  /* ---------- activity ---------- */
   .feed-item{display:flex;gap:11px;padding:11px 4px;border-bottom:1px solid var(--border);font-size:.9rem;line-height:1.4}
   .feed-item:last-child{border-bottom:none}
   .feed-item .fi{flex-shrink:0;font-size:1rem;margin-top:1px}
@@ -120,7 +113,6 @@
   .feed-item .fw{flex-shrink:0;font-size:.72rem;color:var(--dim2);white-space:nowrap}
   .empty-note{text-align:center;color:var(--dim2);font-size:.9rem;padding:22px 10px}
 
-  /* ---------- sheet / modal ---------- */
   .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);z-index:50;display:none;align-items:flex-end;justify-content:center}
   .sheet-bg.open{display:flex;animation:fade .25s ease}
   .sheet{width:100%;max-width:520px;background:var(--surface);border:1px solid var(--border);border-bottom:none;
@@ -146,7 +138,6 @@
   .foot{text-align:center;color:var(--dim2);font-size:.78rem;margin-top:30px;line-height:1.6}
   .foot a{color:var(--dim);text-decoration:none}
 
-  /* ---------- toast ---------- */
   #toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 26px);transform:translateX(-50%) translateY(30px);
     background:var(--surface2);color:var(--text);border:1px solid var(--border);padding:13px 20px;border-radius:30px;
     font-size:.9rem;font-weight:600;z-index:200;opacity:0;transition:.3s;pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.4);max-width:90vw;text-align:center}
@@ -158,7 +149,6 @@
 <body>
 <div class="wrap">
 
-  <!-- ============ JOIN SCREEN ============ -->
   <section id="screenJoin" class="screen active">
     <div class="brand">
       <svg class="bill-hero" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -190,12 +180,11 @@
     <p class="foot">💵 A silly little game for group trips.<br>The dollar goes to whoever just did something nice.</p>
   </section>
 
-  <!-- ============ BOARD SCREEN ============ -->
   <section id="screenBoard" class="screen">
     <div class="topbar">
       <div class="grp">
         <div class="k">Group</div>
-        <div class="v" id="grpName">—</div>
+        <div class="v"><span class="live-dot off" id="liveDot"></span><span id="grpName">—</span></div>
       </div>
       <button class="icon-btn" title="Share" onclick="shareGroup()">🔗</button>
       <button class="icon-btn" title="Manage" onclick="openManage()">⚙️</button>
@@ -237,7 +226,6 @@
   </section>
 </div>
 
-<!-- ============ PASS SHEET ============ -->
 <div id="passSheet" class="sheet-bg" onclick="if(event.target===this)closeSheet('passSheet')">
   <div class="sheet">
     <div class="grip"></div>
@@ -252,7 +240,6 @@
   </div>
 </div>
 
-<!-- ============ MANAGE SHEET ============ -->
 <div id="manageSheet" class="sheet-bg" onclick="if(event.target===this)closeSheet('manageSheet')">
   <div class="sheet">
     <div class="grip"></div>
@@ -276,17 +263,8 @@
 <div id="toast"></div>
 
 <script>
-/* ===================== Firebase ===================== */
-const fbConfig={apiKey:"AIzaSyDUW7s0nVpnuvvadOxl1ZAHfKDtLeWz-Gw",authDomain:"imposter-game-b6fa1.firebaseapp.com",databaseURL:"https://imposter-game-b6fa1-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"imposter-game-b6fa1",storageBucket:"imposter-game-b6fa1.firebasestorage.app",messagingSenderId:"217306275936",appId:"1:217306275936:web:589d2b90ff21cd4444e305"};
-let db=null;
-function initFB(){if(db)return;try{firebase.initializeApp(fbConfig)}catch(e){}db=firebase.database()}
-function groupRef(code){initFB();return db.ref('gratuity/'+code)}
-function fbError(e){const m=((e&&(e.code||e.message))||'').toString().toLowerCase();
-  if(m.includes('permission'))return 'Database is locked — the app needs Firebase rules updated (ask the host).';
-  return 'Connection problem — try again.';}
-
 /* ===================== State ===================== */
-let S={code:null,myId:null,data:null,ref:null,listener:null,lastCount:null};
+let S={code:null,myId:null,data:null,poll:null,lastHolder:null,busy:false};
 const LS_LAST='gratuity_last';
 const AVCOL=['#85bb65','#d8b556','#5aa9c9','#c97fb0','#c98a5a','#7f8ed8','#6fc9a0','#d86f6f'];
 
@@ -294,7 +272,6 @@ const AVCOL=['#85bb65','#d8b556','#5aa9c9','#c97fb0','#c98a5a','#7f8ed8','#6fc9a
 function $(id){return document.getElementById(id)}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function slug(s){return s.toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')}
-function uid(){return 'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 function avatarColor(id){let h=0;for(const c of id)h=(h*31+c.charCodeAt(0))>>>0;return AVCOL[h%AVCOL.length]}
 function initials(n){const p=n.trim().split(/\s+/);return((p[0]||'?')[0]+(p[1]?p[1][0]:'')).toUpperCase()}
 function timeAgo(t){const s=Math.floor((Date.now()-t)/1000);if(s<45)return'just now';if(s<90)return'1m';if(s<3600)return Math.floor(s/60)+'m';if(s<7200)return'1h';if(s<86400)return Math.floor(s/3600)+'h';return Math.floor(s/86400)+'d'}
@@ -303,8 +280,21 @@ function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');cle
 function goTo(scr){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(scr).classList.add('active');window.scrollTo(0,0)}
 function openSheet(id){$(id).classList.add('open')}
 function closeSheet(id){$(id).classList.remove('open')}
+function setLive(on){const d=$('liveDot');if(d)d.classList.toggle('off',!on)}
 
-/* ===================== Join / create ===================== */
+/* ===================== API ===================== */
+async function apiGet(code){
+  const r=await fetch('/api/state?g='+encodeURIComponent(code),{cache:'no-store'});
+  if(!r.ok)throw new Error('http '+r.status);
+  return r.json();
+}
+async function apiPost(payload){
+  const r=await fetch('/api/state',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  if(!r.ok)throw new Error('http '+r.status);
+  return r.json();
+}
+
+/* ===================== Join ===================== */
 async function doJoin(){
   const code=slug($('grpInput').value);
   const name=$('nameInput').value.trim();
@@ -312,48 +302,44 @@ async function doJoin(){
   if(!name){toast('Enter your name');return}
   const btn=$('joinBtn');btn.disabled=true;btn.innerHTML='<span class="spinner"></span>';
   try{
-    const ref=groupRef(code);
-    const snap=await ref.once('value');
-    let data=snap.val();
-    if(!data){
-      data={name:code,createdAt:Date.now(),holder:null,players:{},log:{}};
-      await ref.set(data);
-    }
-    // find existing player by name (case-insensitive) so re-joins reuse identity
-    let myId=null;
-    const players=data.players||{};
-    for(const id in players){if(players[id].name.toLowerCase()===name.toLowerCase()){myId=id;break}}
-    if(!myId){
-      myId=uid();
-      await ref.child('players/'+myId).set({name:name,count:0,joinedAt:Date.now()});
-    }
-    localStorage.setItem(LS_LAST,JSON.stringify({code,myId}));
-    enterBoard(code,myId);
+    const res=await apiPost({op:'join',g:code,name});
+    S.data=res.group;
+    localStorage.setItem(LS_LAST,JSON.stringify({code,myId:res.myId}));
+    enterBoard(code,res.myId);
   }catch(e){
-    console.error(e);toast(fbError(e));
+    console.error(e);toast('Connection problem — try again.');
   }finally{
     btn.disabled=false;btn.textContent='Enter the group';
   }
 }
 
 function enterBoard(code,myId){
-  S.code=code;S.myId=myId;S.lastCount=null;
+  S.code=code;S.myId=myId;S.lastHolder=null;
   goTo('screenBoard');
-  if(S.ref&&S.listener)S.ref.off('value',S.listener);
-  S.ref=groupRef(code);
-  S.listener=S.ref.on('value',snap=>{
-    const d=snap.val();
-    if(!d){toast('Group was removed');leaveGroup();return}
-    S.data=d;render();
-  },err=>{console.error(err);toast(fbError(err))});
+  render();
+  refresh();
+  startPoll();
 }
 
 function leaveGroup(){
-  if(S.ref&&S.listener)S.ref.off('value',S.listener);
-  S.ref=null;S.listener=null;S.code=null;S.data=null;
+  stopPoll();
+  S.code=null;S.myId=null;S.data=null;
   localStorage.removeItem(LS_LAST);
   $('grpInput').value='';$('nameInput').value='';
   goTo('screenJoin');
+}
+
+/* ===================== Polling ===================== */
+function startPoll(){stopPoll();S.poll=setInterval(refresh,3000);
+  document.addEventListener('visibilitychange',onVis);}
+function stopPoll(){if(S.poll)clearInterval(S.poll);S.poll=null;document.removeEventListener('visibilitychange',onVis);}
+function onVis(){if(!document.hidden)refresh();}
+async function refresh(){
+  if(!S.code||S.busy)return;
+  try{
+    const g=await apiGet(S.code);
+    S.data=g;setLive(true);render();
+  }catch(e){setLive(false)}
 }
 
 /* ===================== Render ===================== */
@@ -367,31 +353,27 @@ function render(){
   const arr=playersArr();
   const holder=d.holder&&d.players&&d.players[d.holder]?{id:d.holder,...d.players[d.holder]}:null;
 
-  // spotlight
   const spot=$('spotlight'),hn=$('holderName'),hs=$('holderSub'),yt=$('youTag');
   if(holder){
     spot.classList.remove('empty');
     hn.textContent=holder.name;
     hs.innerHTML='has held the gratuity dollar <b>'+holder.count+'&times;</b>';
     yt.innerHTML=holder.id===S.myId?'<span class="you-tag">That’s you 🎉</span>':'';
-    // fly-in animation when holder changes
-    if(S.lastCount!==null&&d.holder!==S.lastCount){const b=$('billAnim');b.classList.remove('fly');void b.offsetWidth;b.classList.add('fly')}
+    if(S.lastHolder!==null&&d.holder!==S.lastHolder){const b=$('billAnim');b.classList.remove('fly');void b.offsetWidth;b.classList.add('fly')}
   }else{
     spot.classList.add('empty');
     hn.textContent='Nobody yet';
     hs.textContent='Pass it to whoever has the dollar right now.';
     yt.innerHTML='';
   }
-  S.lastCount=d.holder;
+  S.lastHolder=d.holder;
 
-  // stats
   const totalPasses=d.log?Object.keys(d.log).length:0;
   const sorted=[...arr].sort((a,b)=>b.count-a.count||a.joinedAt-b.joinedAt);
   $('statPlayers').textContent=arr.length;
   $('statPasses').textContent=totalPasses;
   $('statTop').textContent=(sorted[0]&&sorted[0].count>0)?sorted[0].name.split(/\s+/)[0]:'–';
 
-  // leaderboard
   const medals=['🥇','🥈','🥉'];
   $('board').innerHTML=sorted.length?sorted.map((p,i)=>{
     const isH=holder&&holder.id===p.id;
@@ -405,7 +387,6 @@ function render(){
     </div>`;
   }).join(''):'<div class="empty-note">No one here yet.</div>';
 
-  // feed
   const log=d.log?Object.keys(d.log).map(k=>({k,...d.log[k]})).sort((a,b)=>b.at-a.at):[];
   $('undoBtn').style.display=log.length?'block':'none';
   $('feed').innerHTML=log.length?log.slice(0,12).map(e=>{
@@ -415,11 +396,11 @@ function render(){
   }).join(''):'<div class="empty-note">No passes yet. Do something nice 😇</div>';
 }
 
-/* ===================== Pass the dollar ===================== */
+/* ===================== Pass ===================== */
 let passSel=null;
 function openPass(){
   passSel=null;$('reasonInput').value='';$('passConfirm').disabled=true;
-  const holder=S.data.holder;
+  const holder=S.data&&S.data.holder;
   const arr=playersArr().sort((a,b)=>a.joinedAt-b.joinedAt);
   if(arr.length===0){toast('Add some people first');return}
   $('passList').innerHTML=arr.map(p=>{
@@ -442,41 +423,26 @@ function selectPass(id){
 }
 async function confirmPass(){
   if(!passSel)return;
-  const toId=passSel,d=S.data;
-  const to=d.players[toId];if(!to)return;
-  const fromId=d.holder,from=fromId&&d.players[fromId]?d.players[fromId]:null;
+  const toId=passSel;
+  const to=S.data.players[toId];if(!to)return;
   const reason=$('reasonInput').value.trim();
   const btn=$('passConfirm');btn.disabled=true;btn.innerHTML='<span class="spinner"></span>';
+  S.busy=true;
   try{
-    const updates={};
-    updates['holder']=toId;
-    updates['players/'+toId+'/count']=(to.count||0)+1;
-    const logKey=S.ref.child('log').push().key;
-    updates['log/'+logKey]={toId,toName:to.name,fromId:fromId||null,fromName:from?from.name:null,reason:reason||null,at:Date.now()};
-    await S.ref.update(updates);
+    const g=await apiPost({op:'pass',g:S.code,toId,reason});
+    S.data=g;render();
     closeSheet('passSheet');
     toast('💵 Passed to '+to.name);
-  }catch(e){console.error(e);toast('Failed — try again')}
-  finally{btn.disabled=false;btn.textContent='Hand it over'}
+  }catch(e){console.error(e);toast('Failed — try again.')}
+  finally{S.busy=false;btn.disabled=false;btn.textContent='Hand it over'}
 }
 
-/* ===================== Undo ===================== */
+/* ===================== Undo / Manage ===================== */
 async function undoLast(){
-  const d=S.data;if(!d.log)return;
-  const entries=Object.keys(d.log).map(k=>({k,...d.log[k]})).sort((a,b)=>b.at-a.at);
-  const last=entries[0];if(!last)return;
-  const p=d.players[last.toId];
-  try{
-    const updates={};
-    updates['log/'+last.k]=null;
-    if(p)updates['players/'+last.toId+'/count']=Math.max(0,(p.count||0)-1);
-    updates['holder']=last.fromId||null;
-    await S.ref.update(updates);
-    toast('Undone');
-  }catch(e){console.error(e);toast('Could not undo')}
+  S.busy=true;
+  try{const g=await apiPost({op:'undo',g:S.code});S.data=g;render();toast('Undone');}
+  catch(e){toast('Could not undo')}finally{S.busy=false}
 }
-
-/* ===================== Manage ===================== */
 function openManage(){
   $('mgrCode').textContent=S.code;
   renderManage();
@@ -499,29 +465,21 @@ async function addPerson(){
   if(!name){toast('Type a name');return}
   const exists=playersArr().some(p=>p.name.toLowerCase()===name.toLowerCase());
   if(exists){toast(name+' is already in');return}
-  try{
-    await S.ref.child('players/'+uid()).set({name,count:0,joinedAt:Date.now()});
-    inp.value='';toast(name+' added');
-  }catch(e){toast('Failed to add')}
+  S.busy=true;
+  try{const g=await apiPost({op:'add',g:S.code,name});S.data=g;inp.value='';renderManage();render();toast(name+' added');}
+  catch(e){toast('Failed to add')}finally{S.busy=false}
 }
 async function removePerson(id,name){
   if(!confirm('Remove '+name+'? Their score will be lost.'))return;
-  try{
-    const updates={};
-    updates['players/'+id]=null;
-    if(S.data.holder===id)updates['holder']=null;
-    await S.ref.update(updates);
-    toast(name+' removed');
-  }catch(e){toast('Failed to remove')}
+  S.busy=true;
+  try{const g=await apiPost({op:'remove',g:S.code,id});S.data=g;renderManage();render();toast(name+' removed');}
+  catch(e){toast('Failed to remove')}finally{S.busy=false}
 }
 async function resetCounts(){
   if(!confirm('Reset everyone’s score to zero? This clears the history too.'))return;
-  try{
-    const updates={holder:null,log:null};
-    playersArr().forEach(p=>updates['players/'+p.id+'/count']=0);
-    await S.ref.update(updates);
-    toast('Scores reset');closeSheet('manageSheet');
-  }catch(e){toast('Failed to reset')}
+  S.busy=true;
+  try{const g=await apiPost({op:'reset',g:S.code});S.data=g;render();renderManage();toast('Scores reset');closeSheet('manageSheet');}
+  catch(e){toast('Failed to reset')}finally{S.busy=false}
 }
 
 /* ===================== Share ===================== */
@@ -537,7 +495,6 @@ function shareGroup(){
 (function boot(){
   const params=new URLSearchParams(location.search);
   const gParam=params.get('g');
-  // Enter key handlers
   $('grpInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('nameInput').focus()});
   $('nameInput').addEventListener('keydown',e=>{if(e.key==='Enter')doJoin()});
   $('addNameInput').addEventListener('keydown',e=>{if(e.key==='Enter')addPerson()});
@@ -545,14 +502,9 @@ function shareGroup(){
 
   if(gParam){$('grpInput').value=gParam;setTimeout(()=>$('nameInput').focus(),100)}
 
-  // auto-rejoin last group
   try{
     const last=JSON.parse(localStorage.getItem(LS_LAST)||'null');
-    if(last&&last.code&&last.myId&&!gParam){
-      groupRef(last.code).child('players/'+last.myId).once('value').then(s=>{
-        if(s.exists())enterBoard(last.code,last.myId);
-      }).catch(()=>{});
-    }
+    if(last&&last.code&&last.myId&&!gParam){enterBoard(last.code,last.myId);}
   }catch(e){}
 })();
 </script>
