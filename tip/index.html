@@ -281,6 +281,9 @@ const fbConfig={apiKey:"AIzaSyDUW7s0nVpnuvvadOxl1ZAHfKDtLeWz-Gw",authDomain:"imp
 let db=null;
 function initFB(){if(db)return;try{firebase.initializeApp(fbConfig)}catch(e){}db=firebase.database()}
 function groupRef(code){initFB();return db.ref('gratuity/'+code)}
+function fbError(e){const m=((e&&(e.code||e.message))||'').toString().toLowerCase();
+  if(m.includes('permission'))return 'Database is locked — the app needs Firebase rules updated (ask the host).';
+  return 'Connection problem — try again.';}
 
 /* ===================== State ===================== */
 let S={code:null,myId:null,data:null,ref:null,listener:null,lastCount:null};
@@ -327,7 +330,7 @@ async function doJoin(){
     localStorage.setItem(LS_LAST,JSON.stringify({code,myId}));
     enterBoard(code,myId);
   }catch(e){
-    console.error(e);toast('Connection problem — try again');
+    console.error(e);toast(fbError(e));
   }finally{
     btn.disabled=false;btn.textContent='Enter the group';
   }
@@ -342,7 +345,7 @@ function enterBoard(code,myId){
     const d=snap.val();
     if(!d){toast('Group was removed');leaveGroup();return}
     S.data=d;render();
-  },err=>{console.error(err);toast('Sync error')});
+  },err=>{console.error(err);toast(fbError(err))});
 }
 
 function leaveGroup(){
